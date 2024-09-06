@@ -1,14 +1,13 @@
-package com.example.restservice;
+package vibevault.example.vibevault;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class RestServiceApplicationTests {
+class VibevaultApplicationTests {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 	}
 
 }
