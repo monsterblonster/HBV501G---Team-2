@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class VibeApplicationTests {
+	//lookin good
 
 	@Test
 	void contextLoads() {
