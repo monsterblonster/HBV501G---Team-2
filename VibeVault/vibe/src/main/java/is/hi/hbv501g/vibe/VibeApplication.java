@@ -8,6 +8,6 @@ public class VibeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(VibeApplication.class, args);
-	
+	}
 
 }
