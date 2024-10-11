@@ -14,5 +14,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByGroup(Group group); // gæti þurft custom útfærslu
     List<Event> findByName(String name);
     Event findByID(long ID);
-    
 }

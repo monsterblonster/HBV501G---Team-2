@@ -29,6 +29,7 @@ public class VibeApplication {
 			repository.findAll().forEach(user -> {
 				log.info(user.getUserName());
 			});
+			log.info(repository.findByUserName("username1").toString());
 			log.info("");
 		};
 	}
