@@ -3,10 +3,16 @@ package is.hi.hbv501g.vibe.Persistance.Entities;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -42,11 +48,19 @@ public class Event {
     private Date date;
     private String description;
     private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
+
+    @ManyToMany
     private List<User> participants;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
-    
+
     public long getID() {
         return ID;
     }
