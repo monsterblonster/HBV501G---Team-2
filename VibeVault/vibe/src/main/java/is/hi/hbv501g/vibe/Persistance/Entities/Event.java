@@ -1,5 +1,7 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
+import java.util.List;
+
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,5 +20,5 @@ public class Event {
     private String status;
     private User creator;
     private Group group;
-
+    private List<User> participants;
 }
