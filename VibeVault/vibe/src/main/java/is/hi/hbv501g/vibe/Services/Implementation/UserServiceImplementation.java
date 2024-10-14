@@ -19,10 +19,10 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public void registerUser(String userName, String password) {
-        User user = new User(); // Create a new User object
-        user.setUserName(userName); // Set the username using the setter
-        user.setUserPW(password); // Set the password using the setter
-        userRepository.save(user); // Save to the repository
+        User user = new User();
+        user.setUserName(userName);
+        user.setUserPW(password);
+        userRepository.save(user);
     }
 
 
