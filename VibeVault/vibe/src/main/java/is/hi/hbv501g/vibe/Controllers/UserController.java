@@ -29,6 +29,15 @@ public class UserController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public String registerUser(@ModelAttribute("user") User user, Model model) {
+        System.out.println("Username: " + user.getUserName());
+        System.out.println("Password: " + user.getUserPW());
+
+        if (user.getUserName() == null || user.getUserName().isEmpty() ||
+                user.getUserPW() == null || user.getUserPW().isEmpty()) {
+            model.addAttribute("error", "Username and Password cannot be empty.");
+            return "register";
+        }
+
         userService.registerUser(user.getUserName(), user.getUserPW());
         return "redirect:/registration-confirmation?username=" + user.getUserName();
     }

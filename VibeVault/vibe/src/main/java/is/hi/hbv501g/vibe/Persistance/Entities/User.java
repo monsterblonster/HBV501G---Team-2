@@ -35,7 +35,9 @@ public class User {
         return userName;
     }
 
-    public String getUserPW() {
-        return userPW;
-    }
+    public void setUserName(String userName) { this.userName = userName; }
+
+    public String getUserPW() {return userPW; }
+
+    public void setUserPW(String userPW) { this.userPW = userPW; }
 }
