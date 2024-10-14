@@ -39,14 +39,7 @@ public class UserController {
         }
 
         userService.registerUser(user.getUserName(), user.getUserPW());
-        return "redirect:/registration-confirmation?username=" + user.getUserName();
-    }
-
-    // Confirmation Page
-    @RequestMapping(value = "/registration-confirmation", method = RequestMethod.GET)
-    public String showRegistrationConfirmation(@RequestParam("username") String username, Model model) {
-        model.addAttribute("username", username);
-        return "registration-confirmation";
+        return "redirect:/profile?username=" + user.getUserName();
     }
 
     // Login Page
@@ -63,10 +56,22 @@ public class UserController {
 
         if (dbUser != null && dbUser.getUserPW().equals(user.getUserPW())) {
             model.addAttribute("message", "Login successful!");
-            return "welcome"; // Redirect to a welcome page
+            return "redirect:/profile?username=" + user.getUserName();
         } else {
             model.addAttribute("error", "Invalid credentials");
             return "login"; // Stay on login page with error
+        }
+    }
+
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    public String showUserProfile(Model model, @RequestParam("username") String username) {
+        User user = userService.findUserByUsername(username).orElse(null);
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "profile"; // returns the "profile.html" page
+        } else {
+            model.addAttribute("error", "User not found");
+            return "profile";
         }
     }
 }
