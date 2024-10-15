@@ -1,6 +1,7 @@
 package is.hi.hbv501g.vibe.Controllers;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
+import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    // Registration Page (GET)
+
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -42,14 +43,14 @@ public class UserController {
         return "redirect:/profile?username=" + user.getUserName();
     }
 
-    // Login Page
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String showLoginForm(Model model) {
         model.addAttribute("user", new User());
         return "login";
     }
 
-    // Handling Login (POST)
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String loginUser(@ModelAttribute("user") User user, Model model) {
         User dbUser = userService.findUserByUsername(user.getUserName()).orElse(null);
@@ -74,4 +75,11 @@ public class UserController {
             return "profile";
         }
     }
+
+    @RequestMapping(value = "/create-group", method = RequestMethod.GET)
+    public String showCreateGroupForm(Model model) {
+        model.addAttribute("group", new Group());
+        return "group_create";
+    }
+
 }

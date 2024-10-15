@@ -1,11 +1,9 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -19,6 +17,9 @@ public class User {
 
     @Column(name = "userpw", nullable = false)
     private String userPW;
+
+    @ManyToMany(mappedBy = "members")
+    private Set<Group> groups = new HashSet<>();
 
     public User() {}
 
@@ -40,4 +41,12 @@ public class User {
     public String getUserPW() {return userPW; }
 
     public void setUserPW(String userPW) { this.userPW = userPW; }
+
+    public Set<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
+    }
 }

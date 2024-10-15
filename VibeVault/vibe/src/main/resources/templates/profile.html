@@ -5,11 +5,16 @@
   <title>User Profile</title>
 </head>
 <body>
-<h2>User Profile</h2>
+<h2>Welcome, <span th:text="${user.userName}"></span>!</h2>
 
-<p><strong>Username:</strong> <span th:text="${user.userName}"></span></p>
-<p><strong>Password:</strong> <span th:text="${user.userPW}"></span></p>
+<h3>Your Groups:</h3>
+<ul>
+  <li th:each="group : ${groups}">
+    <span th:text="${group.groupName}"></span> - <span th:text="${group.description}"></span>
+  </li>
+</ul>
 
-<a th:href="@{/login}"><button>Logout</button></a>
+<h3>Create a New Group</h3>
+<a th:href="@{/create-group}"><button>Create Group</button></a>
 </body>
 </html>
