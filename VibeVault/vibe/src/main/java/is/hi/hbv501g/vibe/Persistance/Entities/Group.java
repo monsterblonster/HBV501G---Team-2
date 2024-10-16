@@ -12,4 +12,11 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long ID;
+    private String tester;
+    protected Group() {}
+
+    public Group(String testString) {
+        this.tester = testString;
+    }
+
 }

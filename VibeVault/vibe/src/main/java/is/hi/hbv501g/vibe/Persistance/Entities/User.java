@@ -22,15 +22,25 @@ public class User {
         this.userPW = userPW;
     }
 
-    public Long getID() {
-        return ID;
+    @Override
+    public String toString() {
+        return "User [ID=" + ID + ", userName=" + userName + ", userPW=" + userPW + "]";
     }
 
     public String getUserName() {
         return userName;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getUserPW() {
         return userPW;
     }
+
+    public void setUserPW(String userPW) {
+        this.userPW = userPW;
+    }
+    
 }

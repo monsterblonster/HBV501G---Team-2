@@ -1,6 +1,6 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +10,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -22,13 +21,6 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long ID;
 
-    @Override
-    public String toString() {
-        return "Event [ID=" + ID + ", name=" + name + ", date=" + date + ", description=" + description + ", status="
-                + status + ", group=" + group + ", creator=" + creator + ", participants=" + participants
-                + ", comments=" + comments + "]";
-    }
-
     protected Event(){}
 
     public Event(String name, Date date, String description, String status, Group group, User creator){
@@ -37,10 +29,6 @@ public class Event {
         this.description = description;
         this.status = status;
         this.group = group;
-        this.creator = creator;
-        List<User> particpant = new ArrayList<User>();
-        particpant.add(creator);
-        this.participants = particpant;
         this.comments = new ArrayList<Comment>();
     }
     
@@ -52,20 +40,11 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User creator;
-
-    @ManyToMany
-    private List<User> participants;
-
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     public long getID() {
         return ID;
-    }
-    public void setID(long iD) {
-        ID = iD;
     }
     public String getName() {
         return name;
@@ -96,18 +75,6 @@ public class Event {
     }
     public void setGroup(Group group) {
         this.group = group;
-    }
-    public User getCreator() {
-        return creator;
-    }
-    public void setCreator(User creator) {
-        this.creator = creator;
-    }
-    public List<User> getParticipants() {
-        return participants;
-    }
-    public void setParticipants(List<User> participants) {
-        this.participants = participants;
     }
     public List<Comment> getComments() {
         return comments;

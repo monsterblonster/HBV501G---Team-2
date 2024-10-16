@@ -11,7 +11,11 @@ import is.hi.hbv501g.vibe.Services.EventService;
 
 @Service
 public class EventServiceImplementation implements EventService {
-    EventRepository eventRepository;
+    private EventRepository eventRepository;
+
+    public EventServiceImplementation(EventRepository eventRepository){
+        this.eventRepository = eventRepository;
+    }
 
     @Override
     public Event save(Event event) {
