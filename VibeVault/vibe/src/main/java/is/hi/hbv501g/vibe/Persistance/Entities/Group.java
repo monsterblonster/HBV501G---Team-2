@@ -20,7 +20,7 @@ public class Group {
 
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
-    private User admin; // The creator of the group
+    private User admin;
 
     @ManyToMany
     @JoinTable(

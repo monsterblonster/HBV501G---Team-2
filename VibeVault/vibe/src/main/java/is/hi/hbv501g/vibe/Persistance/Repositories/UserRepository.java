@@ -2,7 +2,6 @@ package is.hi.hbv501g.vibe.Persistance.Repositories;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
 import java.util.Optional;
 
 

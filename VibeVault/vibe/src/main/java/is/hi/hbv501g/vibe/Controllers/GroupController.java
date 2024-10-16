@@ -32,35 +32,26 @@ public class GroupController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String createGroup(@ModelAttribute("group") Group group) {
-        // Retrieve a default or existing user from the database
         Optional<User> adminOptional = userService.findUserByUsername("DefaultAdmin");
 
-        // Check if the admin user exists
         if (adminOptional.isPresent()) {
             User admin = adminOptional.get();
 
-            // Set the admin for the group
             group.setAdmin(admin);
 
-            // Use setters to assign values
             groupService.createGroup(group.getGroupName(), group.getDescription(), admin);
         } else {
-            // Handle the case where the admin user does not exist (e.g., create a new user)
-            String defaultUsername = "DefaultAdmin"; // Placeholder username
-            String defaultPassword = "defaultPassword"; // Placeholder password
+            String defaultUsername = "DefaultAdmin";
+            String defaultPassword = "defaultPassword";
 
-            // Call registerUser with the new user's username and password
             userService.registerUser(defaultUsername, defaultPassword);
 
-            // After registration, retrieve the newly created user
             Optional<User> newUserOptional = userService.findUserByUsername(defaultUsername);
             if (newUserOptional.isPresent()) {
                 User newUser = newUserOptional.get();
 
-                // Set the admin for the group
                 group.setAdmin(newUser);
 
-                // Use setters to assign values
                 groupService.createGroup(group.getGroupName(), group.getDescription(), newUser);
             }
         }
