@@ -26,10 +26,6 @@ public class VibeApplication {
 	@Bean
 	public CommandLineRunner demo(UserRepository repository, EventServiceImplementation eService) {
 		return (args) -> {
-			User user1 = new User("username1", "password1");
-			User user2 = new User("Hackerman69", "BigBoi17");
-			repository.save(user1);
-			repository.save(user2);
 
 			log.info("Users found with findAll():");
 			repository.findAll().forEach(user -> {

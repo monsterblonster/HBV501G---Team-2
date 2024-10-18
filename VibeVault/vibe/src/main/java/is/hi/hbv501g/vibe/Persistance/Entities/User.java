@@ -1,10 +1,9 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -12,10 +11,17 @@ public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long ID;
+
+    @Column(name = "user_name", nullable = false, unique = true)
     private String userName;
+
+    @Column(name = "userpw", nullable = false)
     private String userPW;
 
-    protected User() {}
+    @ManyToMany(mappedBy = "members")
+    private Set<Group> groups = new HashSet<>();
+
+    public User() {}
 
     public User(String userName, String userPW) {
         this.userName = userName;
@@ -31,12 +37,18 @@ public class User {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String userName) { this.userName = userName; }
+
+    public String getUserPW() {return userPW; }
+
+    public void setUserPW(String userPW) { this.userPW = userPW; }
+
+    public Set<Group> getGroups() {
+        return groups;
     }
 
-    public String getUserPW() {
-        return userPW;
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
     }
 
     public void setUserPW(String userPW) {
