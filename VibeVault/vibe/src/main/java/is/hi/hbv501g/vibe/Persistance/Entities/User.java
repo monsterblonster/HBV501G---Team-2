@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -20,6 +22,13 @@ public class User {
 
     @ManyToMany(mappedBy = "members")
     private Set<Group> groups = new HashSet<>();
+    
+    @ManyToMany(mappedBy = "participants")
+    private List<Event> events;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Event> ownedEvents;
+
 
     public User() {}
 

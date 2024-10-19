@@ -16,6 +16,7 @@
         <td th:text="${group.groupName}"></td>
         <td th:text="${group.description}"></td>
         <td><a th:href="@{'/groups/' + ${group.id} + '/details'}">Details</a></td>
+        <td><a th:href="@{'/groups/' + ${group.id} + '/events'} ">Group Events</a></td>
     </tr>
 </table>
 <a href="/groups/create">Create New Group</a>

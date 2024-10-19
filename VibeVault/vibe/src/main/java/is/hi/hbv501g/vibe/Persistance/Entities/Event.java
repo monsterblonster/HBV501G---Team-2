@@ -4,12 +4,17 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.mapping.Set;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -19,9 +24,9 @@ import jakarta.persistence.Table;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long ID;
+    private Long id;
 
-    protected Event(){}
+    public Event(){}
 
     public Event(String name, Date date, String description, String status, Group group, User creator){
         this.name = name;
@@ -29,23 +34,68 @@ public class Event {
         this.description = description;
         this.status = status;
         this.group = group;
+        this.creator = creator;
         this.comments = new ArrayList<Comment>();
+        this.participants = new ArrayList<User>();
+        this.participants.add(this.creator);
+        this.timeCreated = new Date();
     }
     
     private String name;
+    private Date timeCreated;
     private Date date;
     private String description;
     private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User creator;
+
+    @ManyToMany
+    @JoinTable(
+        name = "event_participants",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private List<User> participants;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
-
-    public long getID() {
-        return ID;
+    
+    public Long getId() {
+        return id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public Date getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(Date timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+    public List<User> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<User> participants) {
+        this.participants = participants;
+    }
+
     public String getName() {
         return name;
     }

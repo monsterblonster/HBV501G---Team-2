@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+
 @Controller
 @RequestMapping("/groups")
 public class GroupController {
@@ -31,7 +32,10 @@ public class GroupController {
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String createGroup(@ModelAttribute("group") Group group) {
+    public String createGroup(@RequestParam("username") String username, @ModelAttribute("group") Group group) {
+        User creator = userService.findUserByUsername(username).get();
+        groupService.createGroup(group.getGroupName(), group.getDescription(), creator);
+        /*
         Optional<User> adminOptional = userService.findUserByUsername("DefaultAdmin");
 
         if (adminOptional.isPresent()) {
@@ -55,8 +59,9 @@ public class GroupController {
                 groupService.createGroup(group.getGroupName(), group.getDescription(), newUser);
             }
         }
-
         return "redirect:/groups";
+        */
+        return "redirect:/profile?username=" + creator.getUserName();
     }
 
 
@@ -76,5 +81,17 @@ public class GroupController {
         }
         return "redirect:/groups";
     }
+
+    // Hægt að endurnefna í showActivityLog og breyta í það
+    // eða bara halda þessu sem lista yfir alla eventa í group og hafa activity log sem annað
+    @RequestMapping(value = "/{groupName}/events", method=RequestMethod.GET)
+    public String showGroupEvents(@RequestParam("username") String username, @PathVariable("groupName") String groupName, Model model) {
+        Group group = groupService.findByGroupName(groupName).orElse(null);
+        model.addAttribute("user", userService.findUserByUsername(username).orElse(null));
+        model.addAttribute("events", group.getGroupEvents());
+        model.addAttribute("group", group);
+        return "group_events";
+    }
+    
 
 }

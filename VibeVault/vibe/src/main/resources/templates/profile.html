@@ -8,13 +8,21 @@
 <h2>Welcome, <span th:text="${user.userName}"></span>!</h2>
 
 <h3>Your Groups:</h3>
-<ul>
-  <li th:each="group : ${groups}">
-    <span th:text="${group.groupName}"></span> - <span th:text="${group.description}"></span>
-  </li>
-</ul>
+<table>
+  <tr>
+      <th>Group Name</th>
+      <th>Description</th>
+      <th>Actions</th>
+  </tr>
+  <tr th:each="group : ${userGroups}">
+      <td th:text="${group.groupName}"></td>
+      <td th:text="${group.description}"></td>
+      <td><a th:href="@{'/groups/' + ${group.id} + '/details'}">Details</a></td>
+      <td><a th:href="@{'/groups/' + ${group.groupName} + '/events?username='  + ${user.userName}} ">Group Events</a></td>
+  </tr>
+</table>
 
 <h3>Create a New Group</h3>
-<a th:href="@{/create-group}"><button>Create Group</button></a>
+<a th:href="@{/create-group?username=}+${user.userName}"><button>Create Group</button></a>
 </body>
 </html>
