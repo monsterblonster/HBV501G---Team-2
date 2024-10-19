@@ -32,7 +32,7 @@ public class ChatController {
 
         model.addAttribute("comment", commentService.findAll());
 
-        return "comment";
+        return "comments";
     }
 
 
