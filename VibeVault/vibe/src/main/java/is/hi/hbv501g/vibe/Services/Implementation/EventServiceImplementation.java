@@ -2,6 +2,7 @@ package is.hi.hbv501g.vibe.Services.Implementation;
 
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
@@ -44,7 +45,7 @@ public class EventServiceImplementation implements EventService {
     }
     
     @Override
-    public Event findByID(long ID) {
-        return eventRepository.findByID(ID);
+    public Optional<Event> findById(Long id) {
+        return eventRepository.findById(id);
     }
 }
