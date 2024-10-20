@@ -17,23 +17,24 @@ public class ChatController {
 
     private final CommentService commentService;
 
-
     @Autowired
     public ChatController(CommentService commentService) {
         this.commentService = commentService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/comment")
-    public String commentViewPost(@ModelAttribute("comment") Comment comment, Model model){
 
-        commentService.save(comment);
-
+    @RequestMapping(method = RequestMethod.GET)
+    public String commentViewGet(Model model) {
         model.addAttribute("comment", new Comment());
-
-        model.addAttribute("comment", commentService.findAll());
+        model.addAttribute("comments", commentService.findAll());
 
         return "comments";
     }
 
-
+    @RequestMapping(method = RequestMethod.POST, value = "/comment")
+    public String commentViewPost(@ModelAttribute("comment") Comment comment, Model model) {
+        commentService.save(comment);
+        return "redirect:/comments";
+    }
 }
+
