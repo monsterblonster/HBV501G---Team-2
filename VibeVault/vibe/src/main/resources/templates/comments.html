@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Send Message</title>
+</head>
+<body>
+<h2>Create new message</h2>
+
+<div>
+    <h3>Previous Comments</h3>
+    <ul>
+        <li th:each="comment : ${comments}">
+            <p th:text="${comment.commentData}"></p>
+        </li>
+    </ul>
+
+</div>
+
+<form th:action="@{/comments/comment}" th:object="${comment}" method="POST">
+  <table>
+    <tr>
+      <td>Comment:</td>
+      <td>
+        <textarea th:field="*{commentData}" placeholder="Write a message"></textarea>
+      </td>
+    </tr>
+  </table>
+  <button type="submit">Post</button>
+</form>
+</body>
+</html>
+
