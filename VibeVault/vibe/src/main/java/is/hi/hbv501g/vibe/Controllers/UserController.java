@@ -61,7 +61,7 @@ public class UserController {
             return "redirect:/profile?username=" + user.getUserName();
         } else {
             model.addAttribute("error", "Invalid credentials");
-            return "login"; // Stay on login page with error
+            return "login";
         }
     }
 
@@ -70,9 +70,7 @@ public class UserController {
         User user = userService.findUserByUsername(username).orElse(null);
         if (user != null) {
             model.addAttribute("user", user);
-            Set<Group> userGroups = user.getGroups();
-            model.addAttribute("userGroups", userGroups);
-            return "profile"; // returns the "profile.html" page
+            return "profile";
         } else {
             model.addAttribute("error", "User not found");
             return "profile";

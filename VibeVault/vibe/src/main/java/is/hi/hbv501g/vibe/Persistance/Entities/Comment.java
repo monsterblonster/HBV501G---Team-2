@@ -13,8 +13,33 @@ import jakarta.persistence.Table;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long ID;
+    private Long id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Event event;
+    private String commentData;
+    
+    //private DateTime commentTime;
+
+    public Comment() {}
+
+    //should also have user id and event id.
+    public Comment(Long id, String commentData) {
+        this.id = id;
+        this.commentData = commentData;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCommentData() {
+        return commentData;
+    }
+
+    public void setCommentData(String commentData) {
+        this.commentData = commentData;
+    }
 }
