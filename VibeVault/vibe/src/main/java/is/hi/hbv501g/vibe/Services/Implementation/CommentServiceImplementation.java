@@ -1,7 +1,8 @@
 package is.hi.hbv501g.vibe.Services.Implementation;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Comment;
-import org.hibernate.annotations.DialectOverride.OverridesAnnotation;
+import is.hi.hbv501g.vibe.Persistance.Repositories.CommentRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @Service
 public class CommentServiceImplementation implements CommentService {
+    private CommentRepository commentRepository;
 
     @Autowired
     public CommentServiceImplementation(CommentRepository commentRepository) {

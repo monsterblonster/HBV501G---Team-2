@@ -55,7 +55,7 @@ public class EventController {
     
     
 
-    @RequestMapping("")
+    @RequestMapping(value = "/{id}/details", method = RequestMethod.GET)
     public String eventPage() {
         return "event";
     }

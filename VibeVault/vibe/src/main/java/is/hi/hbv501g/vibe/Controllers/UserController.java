@@ -70,6 +70,8 @@ public class UserController {
         User user = userService.findUserByUsername(username).orElse(null);
         if (user != null) {
             model.addAttribute("user", user);
+            Set<Group> userGroups = user.getGroups();
+            model.addAttribute("userGroups", userGroups);
             return "profile";
         } else {
             model.addAttribute("error", "User not found");

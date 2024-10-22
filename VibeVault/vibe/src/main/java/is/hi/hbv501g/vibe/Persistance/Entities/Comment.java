@@ -27,6 +27,9 @@ public class Comment {
         this.commentData = commentData;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Event event;
+
     public Long getId() {
         return id;
     }
@@ -42,4 +45,13 @@ public class Comment {
     public void setCommentData(String commentData) {
         this.commentData = commentData;
     }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+    
 }
