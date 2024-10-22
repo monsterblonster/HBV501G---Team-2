@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+</head>
+<body>
+<h2 th:text="@{'Events in ' + ${group.groupName}}"></h2>
+<h3 th:text="@{'Member: ' + ${user.userName}}"></h3>
+<table>
+    <tr>
+        <th>Event name</th>
+        <th>Description</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="event : ${events}">
+        <td th:text="${event.name}"></td>
+        <td th:text="${event.description}"></td>
+        <td th:text="${event.status}"></td>
+        <td><a th:href="@{'/events/' + ${event.id} + '/details'}">Details</a></td>
+    </tr>
+</table>
+<a th:href="@{/events/create?username=} + ${user.userName} + '&groupname=' + ${group.groupName}">Create New Event</a>
+</body>
+</html>

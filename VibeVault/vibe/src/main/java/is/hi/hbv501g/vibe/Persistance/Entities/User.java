@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -20,6 +22,13 @@ public class User {
 
     @ManyToMany(mappedBy = "members")
     private Set<Group> groups = new HashSet<>();
+    
+    @ManyToMany(mappedBy = "participants")
+    private List<Event> events;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Event> ownedEvents;
+
 
     public User() {}
 
@@ -28,8 +37,9 @@ public class User {
         this.userPW = userPW;
     }
 
-    public Long getID() {
-        return ID;
+    @Override
+    public String toString() {
+        return "User [ID=" + ID + ", userName=" + userName + ", userPW=" + userPW + "]";
     }
 
     public String getUserName() {
@@ -38,9 +48,9 @@ public class User {
 
     public void setUserName(String userName) { this.userName = userName; }
 
-    public String getUserPW() {return userPW; }
-
-    public void setUserPW(String userPW) { this.userPW = userPW; }
+    public String getUserPW() {
+        return userPW;
+    }
 
     public Set<Group> getGroups() {
         return groups;
@@ -49,4 +59,9 @@ public class User {
     public void setGroups(Set<Group> groups) {
         this.groups = groups;
     }
+
+    public void setUserPW(String userPW) {
+        this.userPW = userPW;
+    }
+    
 }

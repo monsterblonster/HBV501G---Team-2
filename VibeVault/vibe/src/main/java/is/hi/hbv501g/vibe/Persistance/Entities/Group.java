@@ -30,6 +30,8 @@ public class Group {
     )
     private Set<User> members = new HashSet<>();
 
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Event> groupEvents = new HashSet<>();
 
     public Group() {}
 
@@ -37,6 +39,7 @@ public class Group {
         this.groupName = groupName;
         this.description = description;
         this.admin = admin;
+        this.members.add(this.admin);
     }
 
     public Long getId() {
@@ -86,4 +89,14 @@ public class Group {
     public void removeMember(User user) {
         this.members.remove(user);
     }
+
+    public Set<Event> getGroupEvents() {
+        return groupEvents;
+    }
+
+    public void setGroupEvents(Set<Event> groupEvents) {
+        this.groupEvents = groupEvents;
+    }
+
+    
 }

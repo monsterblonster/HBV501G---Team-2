@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.Set;
 
 @Controller
 public class UserController {
@@ -69,6 +70,8 @@ public class UserController {
         User user = userService.findUserByUsername(username).orElse(null);
         if (user != null) {
             model.addAttribute("user", user);
+            Set<Group> userGroups = user.getGroups();
+            model.addAttribute("userGroups", userGroups);
             return "profile";
         } else {
             model.addAttribute("error", "User not found");
@@ -77,7 +80,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/create-group", method = RequestMethod.GET)
-    public String showCreateGroupForm(Model model) {
+    public String showCreateGroupForm(Model model, @RequestParam("username") String username) {
+        User dbUser = userService.findUserByUsername(username).orElse(null);
+        model.addAttribute("user", dbUser);
         model.addAttribute("group", new Group());
         return "group_create";
     }

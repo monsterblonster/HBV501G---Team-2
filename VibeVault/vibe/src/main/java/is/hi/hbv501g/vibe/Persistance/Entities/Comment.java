@@ -1,9 +1,11 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,6 +27,9 @@ public class Comment {
         this.commentData = commentData;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Event event;
+
     public Long getId() {
         return id;
     }
@@ -40,4 +45,13 @@ public class Comment {
     public void setCommentData(String commentData) {
         this.commentData = commentData;
     }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+    
 }
