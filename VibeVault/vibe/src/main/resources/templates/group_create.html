@@ -6,12 +6,18 @@
 </head>
 <body>
   <h2 th:text="@{'Create a New Group ' + ${user.userName}}"></h2>
-<form th:action="@{/groups/create?username=} + ${user.userName}" th:object="${group}" method="post">
-  <label>Group Name:</label>
-  <input type="text" th:field="*{groupName}" required/><br/>
-  <label>Description:</label>
-  <textarea th:field="*{description}"></textarea><br/>
+<form th:action="@{'/groups/create?username=' + ${user.userName}}" th:object="${group}" method="post">
+  <label for="groupName">Group Name:</label>
+  <input type="text" th:field="*{groupName}" id="groupName" required/><br/>
+
+  <label for="description">Description:</label>
+  <textarea th:field="*{description}" id="description" placeholder="Describe your group..."></textarea><br/>
+
+  <label for="tags">Tags (comma-separated):</label>
+  <input type="text" name="tags" id="tags" placeholder="e.g., Music, Art, Coding"/><br/>
+
   <button type="submit">Create Group</button>
 </form>
+
 </body>
 </html>

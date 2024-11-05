@@ -14,11 +14,26 @@ public class User {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long ID;
 
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
+    @Column(name = "email_address", nullable = false, unique = true)
+    private String emailAddress;
+
     @Column(name = "user_name", nullable = false, unique = true)
     private String userName;
 
     @Column(name = "userpw", nullable = false)
     private String userPW;
+
+    @Transient
+    private String confirmPassword;
 
     @ManyToMany(mappedBy = "members")
     private Set<Group> groups = new HashSet<>();
@@ -37,10 +52,34 @@ public class User {
         this.userPW = userPW;
     }
 
+    public long getID() {
+        return ID;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
+    }
+
     @Override
     public String toString() {
         return "User [ID=" + ID + ", userName=" + userName + ", userPW=" + userPW + "]";
     }
+
+    public String getFullName() { return fullName; }
+
+    public void setFullName(String fullName) { this.fullName = fullName; }
+
+    public String getAddress() { return address; }
+
+    public void setAddress(String address) { this.address = address; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public String getEmailAddress() { return emailAddress; }
+
+    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
 
     public String getUserName() {
         return userName;
@@ -63,5 +102,9 @@ public class User {
     public void setUserPW(String userPW) {
         this.userPW = userPW;
     }
+
+    public String getConfirmPassword() { return confirmPassword; }
+
+    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
     
 }

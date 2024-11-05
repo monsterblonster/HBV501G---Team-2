@@ -10,6 +10,10 @@ public interface GroupService {
     Optional<Group> findByGroupName(String groupName);
     void addUserToGroup(User user, Group group);
     List<Group> findAllGroups();
+    void removeUserFromGroup(User user, Group group);
+    Group addTagToGroup(Long groupId, String tagName);
+    Group removeTagFromGroup(Long groupId, String tagName);
+    void saveGroup(Group group);
 
     Optional<Group> findById(Long id);
 }

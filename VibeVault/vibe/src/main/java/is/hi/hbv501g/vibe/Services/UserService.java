@@ -4,7 +4,9 @@ import java.util.Optional;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 
 public interface UserService {
-    void registerUser(String userName, String password);
+    void registerUser(User user);
+    void updateUser(User user);
     Optional<User> findUserByUsername(String userName);
+    Optional<User> findUserById(Long id);
     void deleteUser(Long id);
 }

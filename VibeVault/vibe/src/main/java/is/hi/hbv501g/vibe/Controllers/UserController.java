@@ -3,6 +3,7 @@ package is.hi.hbv501g.vibe.Controllers;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Services.UserService;
+import is.hi.hbv501g.vibe.Services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +19,22 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
+    private GroupService groupService;
+
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @RequestMapping(value = "/create-group", method = RequestMethod.POST)
+    public String createGroup(@ModelAttribute("group") Group group, @RequestParam("username") String username) {
+        User adminUser = userService.findUserByUsername(username).orElse(null);
+        if (adminUser == null) {
+            return "redirect:/error";
+        }
+
+        groupService.createGroup(group.getGroupName(), group.getDescription(), adminUser);
+        return "redirect:/profile?username=" + username;
     }
 
 
@@ -31,17 +46,29 @@ public class UserController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public String registerUser(@ModelAttribute("user") User user, Model model) {
-        System.out.println("Username: " + user.getUserName());
-        System.out.println("Password: " + user.getUserPW());
-
         if (user.getUserName() == null || user.getUserName().isEmpty() ||
-                user.getUserPW() == null || user.getUserPW().isEmpty()) {
-            model.addAttribute("error", "Username and Password cannot be empty.");
+                user.getUserPW() == null || user.getUserPW().isEmpty() ||
+                user.getFullName() == null || user.getFullName().isEmpty() ||
+                user.getAddress() == null || user.getAddress().isEmpty() ||
+                user.getPhoneNumber() == null || user.getPhoneNumber().isEmpty() ||
+                user.getEmailAddress() == null || user.getEmailAddress().isEmpty()) {
+
+            model.addAttribute("error", "All fields are required.");
             return "register";
         }
 
-        userService.registerUser(user.getUserName(), user.getUserPW());
-        return "redirect:/profile?username=" + user.getUserName();
+        if (!user.getUserPW().equals(user.getConfirmPassword())) {
+            model.addAttribute("error", "Password and Confirm Password do not match.");
+            return "register";
+        }
+
+        try {
+            userService.registerUser(user);
+            return "redirect:/login";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "register";
+        }
     }
 
 
@@ -86,5 +113,44 @@ public class UserController {
         model.addAttribute("group", new Group());
         return "group_create";
     }
+
+    @RequestMapping(value = "/profile/edit", method = RequestMethod.GET)
+    public String showEditProfileForm(@RequestParam("username") String username, Model model) {
+        User user = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+        model.addAttribute("user", user);
+        return "edit_profile";
+    }
+
+    @RequestMapping(value = "/profile/edit", method = RequestMethod.POST)
+    public String updateProfile(@ModelAttribute("user") User user, Model model) {
+        if (!user.getUserPW().isEmpty() && !user.getUserPW().equals(user.getConfirmPassword())) {
+            model.addAttribute("error", "New Password and Confirm Password do not match.");
+            return "edit_profile";
+        }
+
+        User existingUser = userService.findUserById(user.getID())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + user.getID()));
+
+        existingUser.setFullName(user.getFullName());
+        existingUser.setAddress(user.getAddress());
+        existingUser.setPhoneNumber(user.getPhoneNumber());
+        existingUser.setEmailAddress(user.getEmailAddress());
+        existingUser.setUserName(user.getUserName());
+
+        if (user.getUserPW() != null && !user.getUserPW().isEmpty()) {
+            existingUser.setUserPW(user.getUserPW());
+        }
+
+        try {
+            userService.updateUser(existingUser);
+            return "redirect:/profile?username=" + existingUser.getUserName();
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "edit_profile";
+        }
+    }
+
+
 
 }

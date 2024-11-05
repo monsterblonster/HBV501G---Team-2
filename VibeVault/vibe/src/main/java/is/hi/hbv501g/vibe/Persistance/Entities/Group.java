@@ -30,15 +30,22 @@ public class Group {
     )
     private Set<User> members = new HashSet<>();
 
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "group_tags",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Event> groupEvents = new HashSet<>();
 
     public Group() {}
 
-    public Group(String groupName, String description, User admin) {
+    public Group(String groupName, String description, User admins) {
         this.groupName = groupName;
         this.description = description;
-        this.admin = admin;
         this.members.add(this.admin);
     }
 
@@ -98,5 +105,17 @@ public class Group {
         this.groupEvents = groupEvents;
     }
 
-    
+    public Set<Tag> getTags() { return tags; }
+    public void setTags(Set<Tag> tags) { this.tags = tags; }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+        tag.getGroups().add(this);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+        tag.getGroups().remove(this);
+    }
 }
+
