@@ -1,41 +1,46 @@
 package is.hi.hbv501g.vibe.Controllers;
 
+import is.hi.hbv501g.vibe.Persistance.Entities.Invitation;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
+import is.hi.hbv501g.vibe.Services.InvitationService;
 import is.hi.hbv501g.vibe.Services.UserService;
 import is.hi.hbv501g.vibe.Services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Set;
 
 @Controller
 public class UserController {
 
     private final UserService userService;
+    private final InvitationService invitationService;
 
     @Autowired
     private GroupService groupService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, InvitationService invitationService) {
         this.userService = userService;
+        this.invitationService = invitationService;
     }
 
     @RequestMapping(value = "/create-group", method = RequestMethod.POST)
     public String createGroup(@ModelAttribute("group") Group group, @RequestParam("username") String username) {
-        User adminUser = userService.findUserByUsername(username).orElse(null);
-        if (adminUser == null) {
-            return "redirect:/error";
-        }
+        User adminUser = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        groupService.createGroup(group.getGroupName(), group.getDescription(), adminUser);
+        group.setAdmin(adminUser);
+        group.getMembers().add(adminUser);
+        groupService.createGroup(group);
+
         return "redirect:/profile?username=" + username;
     }
+
 
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
@@ -97,14 +102,31 @@ public class UserController {
         User user = userService.findUserByUsername(username).orElse(null);
         if (user != null) {
             model.addAttribute("user", user);
+
             Set<Group> userGroups = user.getGroups();
             model.addAttribute("userGroups", userGroups);
-            return "profile";
+
+            List<Invitation> invitations = invitationService.findInvitationsByUser(user);
+            model.addAttribute("invitations", invitations);
+
         } else {
             model.addAttribute("error", "User not found");
-            return "profile";
         }
+        return "profile";
     }
+
+    @RequestMapping(value = "/invitations/{id}/accept", method = RequestMethod.POST)
+    public String acceptInvitation(@PathVariable("id") Long invitationId, @RequestParam("username") String username) {
+        invitationService.acceptInvitation(invitationId);
+        return "redirect:/profile?username=" + username;
+    }
+
+    @RequestMapping(value = "/invitations/{id}/decline", method = RequestMethod.POST)
+    public String declineInvitation(@PathVariable("id") Long invitationId, @RequestParam("username") String username) {
+        invitationService.declineInvitation(invitationId);
+        return "redirect:/profile?username=" + username;
+    }
+
 
     @RequestMapping(value = "/create-group", method = RequestMethod.GET)
     public String showCreateGroupForm(Model model, @RequestParam("username") String username) {
@@ -150,7 +172,5 @@ public class UserController {
             return "edit_profile";
         }
     }
-
-
 
 }

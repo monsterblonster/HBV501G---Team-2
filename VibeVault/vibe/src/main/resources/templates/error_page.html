@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Error</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .error-container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 24px;
+    }
+    p {
+      font-size: 16px;
+    }
+    a {
+      color: #333;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="error-container">
+  <h1>Unexpected Error</h1>
+  <p th:text="${errorMessage != null ? errorMessage : 'An unexpected error occurred. Please try again.'}"></p>
+
+  <a href="javascript:history.back()">Return to Previous Page</a>
+</div>
+
+</body>
+</html>

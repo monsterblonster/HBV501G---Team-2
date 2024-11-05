@@ -5,7 +5,7 @@
   <title>Create Group</title>
 </head>
 <body>
-  <h2 th:text="@{'Create a New Group ' + ${user.userName}}"></h2>
+<h2 th:text="@{'Create a New Group ' + ${user.userName}}"></h2>
 <form th:action="@{'/groups/create?username=' + ${user.userName}}" th:object="${group}" method="post">
   <label for="groupName">Group Name:</label>
   <input type="text" th:field="*{groupName}" id="groupName" required/><br/>
@@ -15,6 +15,9 @@
 
   <label for="tags">Tags (comma-separated):</label>
   <input type="text" name="tags" id="tags" placeholder="e.g., Music, Art, Coding"/><br/>
+
+  <label for="maxMembers">Maximum Members:</label>
+  <input type="number" th:field="*{maxMembers}" id="maxMembers" placeholder="Enter max members" min="1"/><br/>
 
   <button type="submit">Create Group</button>
 </form>

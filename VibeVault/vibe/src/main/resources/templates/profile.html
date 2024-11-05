@@ -60,6 +60,27 @@
         </tbody>
     </table>
 
+    <h3>Pending Group Invitations</h3>
+    <div th:if="${invitations.size() > 0}">
+        <ul>
+            <li th:each="invitation : ${invitations}">
+                <span th:text="${invitation.group.groupName}">Group Name</span>
+                <form th:action="@{'/invitations/' + ${invitation.id} + '/accept'}" method="post" style="display:inline;">
+                    <input type="hidden" name="username" th:value="${user.userName}" />
+                    <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                </form>
+                <form th:action="@{'/invitations/' + ${invitation.id} + '/decline'}" method="post" style="display:inline;">
+                    <input type="hidden" name="username" th:value="${user.userName}" />
+                    <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+    <p th:if="${invitations.size() == 0}">You have no pending invitations.</p>
+
+
+
+
     <h3>Create a New Group</h3>
     <a th:href="@{/create-group(username=${user.userName})}" class="btn btn-success">Create Group</a>
 </div>

@@ -28,7 +28,7 @@ public class Group {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> members = new HashSet<>();
+    private final Set<User> members = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
@@ -41,12 +41,15 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Event> groupEvents = new HashSet<>();
 
+    private Integer maxMembers;
+
     public Group() {}
 
-    public Group(String groupName, String description, User admins) {
+    public Group(String groupName, String description, User admins, Integer maxMembers) {
         this.groupName = groupName;
         this.description = description;
         this.members.add(this.admin);
+        this.maxMembers = maxMembers;
     }
 
     public Long getId() {
@@ -85,10 +88,6 @@ public class Group {
         return members;
     }
 
-    public void setMembers(Set<User> members) {
-        this.members = members;
-    }
-
     public void addMember(User user) {
         this.members.add(user);
     }
@@ -117,5 +116,14 @@ public class Group {
         this.tags.remove(tag);
         tag.getGroups().remove(this);
     }
+
+    public Integer getMaxMembers() { return maxMembers; }
+
+    public void setMaxMembers(Integer maxMembers) { this.maxMembers = maxMembers; }
+
+    public int getCurrentMemberCount() {
+        return members.size();
+    }
+
 }
 

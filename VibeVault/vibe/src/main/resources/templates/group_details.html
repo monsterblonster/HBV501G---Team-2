@@ -18,8 +18,8 @@
   <h3>Tags</h3>
   <div>
     <span th:each="tag : ${group.tags}" th:text="${tag.name} + ' '" class="badge badge-secondary"></span>
+    <p th:if="${group.tags.size() == 0}">No tags added yet.</p>
   </div>
-
 
   <form th:action="@{'/groups/' + ${group.id} + '/add-tag'}" method="post" class="form-inline mt-3">
     <label for="tag" class="mr-2">Add Tag:</label>
@@ -39,14 +39,32 @@
 
   <h3 class="mt-4">Members</h3>
   <ul>
-    <li th:each="member : ${group.members}" th:text="${member.userName}"></li>
+    <li th:each="member : ${group.members}">
+      <span th:text="${member.userName}"></span>
+
+      <div th:if="${user.userName == group.admin.userName && member.userName != group.admin.userName}">
+        <form th:action="@{'/groups/' + ${group.id} + '/remove-user'}" method="post" style="display:inline;">
+          <input type="hidden" name="username" th:value="${member.userName}" />
+          <input type="hidden" name="currentUser" th:value="${user.userName}" />
+          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
+        </form>
+      </div>
+    </li>
   </ul>
 
-  <form th:action="@{'/groups/' + ${group.id} + '/invite'}" method="post" class="form-inline mt-3">
-    <label for="inviteUser" class="mr-2">Invite User:</label>
-    <input type="text" id="inviteUser" name="username" class="form-control mr-2" placeholder="Username" required>
-    <button type="submit" class="btn btn-success">Invite</button>
-  </form>
+
+  <p>Members: <span th:text="${currentMemberCount}"></span> / <span th:text="${maxMembers}"></span></p>
+  <p th:if="${group.members.size() == 0}">No members in this group yet.</p>
+
+  <div th:if="${currentMemberCount < maxMembers}">
+    <form th:action="@{'/groups/' + ${group.id} + '/invite'}" method="post" class="form-inline mt-3">
+      <label for="inviteUser" class="mr-2">Invite User:</label>
+      <input type="text" id="inviteUser" name="username" class="form-control mr-2" placeholder="Username" required>
+      <input type="hidden" name="currentUser" th:value="${user.userName}" />
+      <button type="submit" class="btn btn-success">Invite</button>
+    </form>
+  </div>
+  <p th:if="${currentMemberCount >= maxMembers}" style="color: red;">This group has reached the maximum number of members.</p>
 
   <h3 class="mt-4">Events</h3>
   <div th:if="${group.groupEvents.size() > 0}">
@@ -71,9 +89,12 @@
   </div>
   <p th:if="${group.groupEvents.size() == 0}">No events yet for this group.</p>
 
-  <div class="mt-4">
-    <<a th:href="@{'/groups/' + ${group.id} + '/edit?username=' + ${user.userName}}" class="btn btn-sm btn-warning">Edit</a>
-    <a th:href="@{'/groups/' + ${group.id} + '/delete'}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this group?');">Delete Group</a>
+  <div th:if="${user.userName == group.admin.userName}" class="mt-4">
+    <a th:href="@{'/groups/' + ${group.id} + '/edit?username=' + ${user.userName}}" class="btn btn-sm btn-warning">Edit</a>
+    <form th:action="@{'/groups/' + ${group.id} + '/delete'}" method="post" style="display:inline;">
+      <input type="hidden" name="username" th:value="${user.userName}" />
+      <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this group?');">Delete Group</button>
+    </form>
   </div>
 </div>
 

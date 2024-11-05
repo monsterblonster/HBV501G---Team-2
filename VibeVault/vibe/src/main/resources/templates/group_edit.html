@@ -6,21 +6,27 @@
 </head>
 <body>
 
+<nav>
+  <a th:href="@{'/groups?username=' + ${user.userName}}">Back to Groups</a> |
+  <a th:href="@{'/profile?username=' + ${user.userName}}">My Profile</a>
+</nav>
+
 <div class="container mt-4">
-  <h2 th:text="'Edit Group: ' + ${group.groupName}">Edit Group</h2>
+  <h1>Edit Group</h1>
 
-  <form th:action="@{'/groups/' + ${group.id} + '/edit'}" method="post">
-    <input type="hidden" name="username" th:value="${user.userName}"/>
+  <form th:action="@{'/groups/' + ${group.id} + '/edit'}" th:object="${group}" method="post">
+    <input type="hidden" th:field="*{id}" />
 
-    <div class="form-group">
-      <label for="groupName">Group Name</label>
-      <input type="text" id="groupName" name="groupName" class="form-control" th:value="${group.groupName}" required/>
-    </div>
+    <input type="hidden" name="username" th:value="${user.userName}" />
 
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea id="description" name="description" class="form-control" th:text="${group.description}"></textarea>
-    </div>
+    <label for="groupName">Group Name:</label>
+    <input type="text" th:field="*{groupName}" id="groupName" class="form-control" required/><br/>
+
+    <label for="description">Description:</label>
+    <textarea th:field="*{description}" id="description" class="form-control" placeholder="Describe your group..."></textarea><br/>
+
+    <label for="maxMembers">Maximum Members:</label>
+    <input type="number" th:field="*{maxMembers}" id="maxMembers" class="form-control" placeholder="Enter max members" min="1"/><br/>
 
     <button type="submit" class="btn btn-primary">Save Changes</button>
     <a th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}" class="btn btn-secondary">Cancel</a>

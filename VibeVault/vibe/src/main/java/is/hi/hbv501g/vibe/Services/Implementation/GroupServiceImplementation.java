@@ -30,25 +30,21 @@ public class GroupServiceImplementation implements GroupService {
     }
 
     @Override
-    public Group createGroup(String name, String description, User admin) {
-        Group group = new Group();
-        group.setGroupName(name);
-        group.setDescription(description);
-        group.setAdmin(admin);
-        group.getMembers().add(admin);
-
+    public Group createGroup(Group group) {
+        group.getMembers().add(group.getAdmin());
         return groupRepository.save(group);
     }
+
 
     @Override
     public Group addTagToGroup(Long groupId, String tagName) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found"));
         Tag tag = tagRepository.findByName(tagName)
-                .orElseGet(() -> tagRepository.save(new Tag(tagName))); // Save new tag if it doesn't exist
+                .orElseGet(() -> tagRepository.save(new Tag(tagName)));
 
         group.addTag(tag);
-        return groupRepository.save(group);  // Save the group with the new tag
+        return groupRepository.save(group);
     }
 
     @Override
@@ -59,7 +55,7 @@ public class GroupServiceImplementation implements GroupService {
                 .orElseThrow(() -> new IllegalArgumentException("Tag not found"));
 
         group.removeTag(tag);
-        return groupRepository.save(group); // Save the group without the tag
+        return groupRepository.save(group);
     }
 
     @Override
@@ -69,15 +65,43 @@ public class GroupServiceImplementation implements GroupService {
 
     @Override
     public void addUserToGroup(User user, Group group) {
-        group.addMember(user);
-        groupRepository.save(group);
+        if (group.getMembers().size() < group.getMaxMembers()) {
+            group.addMember(user);
+            groupRepository.save(group);
+        } else {
+            throw new IllegalStateException("Group has reached the maximum number of members.");
+        }
     }
 
     @Override
-    public void removeUserFromGroup(User user, Group group) {
+    public void removeUserFromGroup(User user, Group group, User admin) {
+        if (!group.getAdmin().equals(admin)) {
+            throw new IllegalArgumentException("Only the admin can remove members from the group.");
+        }
+        if (group.getAdmin().equals(user)) {
+            throw new IllegalArgumentException("The admin cannot remove themselves from the group.");
+        }
+
         group.removeMember(user);
         groupRepository.save(group);
     }
+
+
+    @Override
+    public void deleteGroup(Long id, User admin) {
+        Group group = groupRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + id));
+
+        if (!group.getAdmin().equals(admin)) {
+            throw new IllegalArgumentException("Only the admin can delete the group.");
+        }
+
+        group.getMembers().forEach(member -> member.getGroups().remove(group));
+        group.getTags().forEach(tag -> tag.getGroups().remove(group));
+
+        groupRepository.delete(group);
+    }
+
 
     @Override
     public Optional<Group> findById(Long id) {
