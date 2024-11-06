@@ -90,6 +90,7 @@
   <p th:if="${group.groupEvents.size() == 0}">No events yet for this group.</p>
 
   <div th:if="${user.userName == group.admin.userName}" class="mt-4">
+    <a th:href="@{/events/create?username=} + ${user.userName} + '&groupname=' + ${group.groupName}">Create New Event</a>
     <a th:href="@{'/groups/' + ${group.id} + '/edit?username=' + ${user.userName}}" class="btn btn-sm btn-warning">Edit</a>
     <form th:action="@{'/groups/' + ${group.id} + '/delete'}" method="post" style="display:inline;">
       <input type="hidden" name="username" th:value="${user.userName}" />
