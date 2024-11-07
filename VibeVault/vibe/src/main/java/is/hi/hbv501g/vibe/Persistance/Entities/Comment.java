@@ -1,12 +1,6 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "comments")
@@ -29,6 +23,10 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
     public Long getId() {
         return id;
@@ -53,5 +51,11 @@ public class Comment {
     public void setEvent(Event event) {
         this.event = event;
     }
+
+    public User getAuthor() { return author; }
+
+    public void setAuthor(User author) { this.author = author; }
+
+
     
 }

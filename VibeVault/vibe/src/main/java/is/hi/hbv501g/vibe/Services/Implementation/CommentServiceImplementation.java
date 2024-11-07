@@ -35,8 +35,8 @@ public class CommentServiceImplementation implements CommentService {
     }
 
     @Override
-    public Optional<Comment> findByEventId(Long id) {
-        return commentRepository.findById(id);
+    public List<Comment> findByEventId(Long eventId) {
+        return commentRepository.findByEventId(eventId);
     }
-    
+
 }

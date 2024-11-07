@@ -9,5 +9,5 @@ public interface CommentService {
     Comment save(Comment comment);
     void delete(Comment comment);
     List<Comment> findAll();
-    Optional<Comment> findByEventId(Long id);
+    List<Comment> findByEventId(Long eventId);
 }

@@ -46,6 +46,7 @@ public class Event {
     private Date date;
     private String description;
     private String status;
+    private String photoPath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
@@ -132,5 +133,7 @@ public class Event {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+    public String getPhotoPath() { return photoPath; }
+    public void setPhotoPath(String photoPath) { this.photoPath = photoPath; }
     
 }

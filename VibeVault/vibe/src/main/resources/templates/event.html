@@ -2,9 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <Title>Event</Title>
+    <title>Event Details</title>
 </head>
-<Body>
-    eventpage
-</Body>
+<body>
+<h2 th:text="${event.name}">Event Name</h2>
+
+<!-- Back to Group Button -->
+<a th:href="@{'/groups/' + ${event.group.id} + '/details?username=' + ${user.userName}}" class="btn btn-secondary">Back to Group</a>
+
+
+<p th:text="${event.description}">Event Description</p>
+<p>Status: <span th:text="${event.status}">Status</span></p>
+<p>Created by: <span th:text="${event.creator != null ? event.creator.userName : 'Unknown'}">Username</span></p>
+<p>Date: <span th:text="${#dates.format(event.date, 'yyyy-MM-dd HH:mm')}">Event Date</span></p>
+
+<!-- Event Photo Display -->
+<div th:if="${event.photoPath}">
+    <h3>Event Photo</h3>
+    <img th:src="@{${event.photoPath}}" alt="Event Photo" width="400" height="200">
+</div>
+
+<!-- Comments Section -->
+<h3>Comments</h3>
+<div th:each="comment : ${comments}">
+    <p><strong th:text="${comment.author != null ? comment.author.userName : 'Anonymous'}">Author</strong>:
+        <span th:text="${comment.commentData}">Comment text</span></p>
+</div>
+
+<!-- Comment Form -->
+<form th:action="@{'/events/' + ${event.id} + '/details/comment'}" method="post">
+    <input type="hidden" name="username" th:value="${user.userName}" />
+    <label for="commentData">Add a comment:</label>
+    <textarea id="commentData" name="commentData" placeholder="Add a comment..." required></textarea>
+    <button type="submit">Post Comment</button>
+</form>
+
+</body>
 </html>
