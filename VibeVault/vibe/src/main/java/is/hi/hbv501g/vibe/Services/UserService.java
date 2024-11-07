@@ -9,4 +9,5 @@ public interface UserService {
     Optional<User> findUserByUsername(String userName);
     Optional<User> findUserById(Long id);
     void deleteUser(Long id);
+    void updateUserProfilePicture(String username, String profilePicturePath);
 }

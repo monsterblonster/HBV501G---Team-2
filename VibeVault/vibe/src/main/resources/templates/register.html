@@ -13,7 +13,7 @@
     <p th:text="${error}"></p>
   </div>
 
-  <form th:action="@{/register}" th:object="${user}" method="post" class="form-group">
+  <form th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data" class="form-group">
     <label for="fullName">Full Name:</label>
     <input type="text" th:field="*{fullName}" id="fullName" class="form-control" placeholder="Enter full name" required/>
 
@@ -34,6 +34,9 @@
 
     <label for="confirmPassword">Confirm Password:</label>
     <input type="password" th:field="*{confirmPassword}" id="confirmPassword" class="form-control" placeholder="Confirm password" required/>
+
+    <label for="profilePicture">Upload Profile Picture:</label>
+    <input type="file" id="profilePicture" name="profilePicture" accept="image/*"><br>
 
     <button type="submit" class="btn btn-primary mt-3">Register</button>
   </form>

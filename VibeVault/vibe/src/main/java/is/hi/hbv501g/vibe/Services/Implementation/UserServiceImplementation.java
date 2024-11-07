@@ -50,4 +50,12 @@ public class UserServiceImplementation implements UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    @Override
+    public void updateUserProfilePicture(String username, String profilePicturePath) {
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setProfilePicturePath(profilePicturePath);
+        userRepository.save(user);
+    }
 }

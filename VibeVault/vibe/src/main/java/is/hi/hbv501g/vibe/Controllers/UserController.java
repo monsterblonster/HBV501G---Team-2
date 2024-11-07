@@ -3,6 +3,7 @@ package is.hi.hbv501g.vibe.Controllers;
 import is.hi.hbv501g.vibe.Persistance.Entities.Invitation;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
+import is.hi.hbv501g.vibe.Services.FileStorageService;
 import is.hi.hbv501g.vibe.Services.InvitationService;
 import is.hi.hbv501g.vibe.Services.UserService;
 import is.hi.hbv501g.vibe.Services.GroupService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -19,14 +21,16 @@ public class UserController {
 
     private final UserService userService;
     private final InvitationService invitationService;
+    private final FileStorageService fileStorageService;
 
     @Autowired
     private GroupService groupService;
 
     @Autowired
-    public UserController(UserService userService, InvitationService invitationService) {
+    public UserController(UserService userService, InvitationService invitationService, FileStorageService fileStorageService) {
         this.userService = userService;
         this.invitationService = invitationService;
+        this.fileStorageService = fileStorageService;
     }
 
     @RequestMapping(value = "/create-group", method = RequestMethod.POST)
@@ -41,8 +45,6 @@ public class UserController {
         return "redirect:/profile?username=" + username;
     }
 
-
-
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -50,7 +52,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String registerUser(@ModelAttribute("user") User user, Model model) {
+    public String registerUser(@ModelAttribute("user") User user, @RequestParam("profilePicture") MultipartFile profilePicture, Model model) {
         if (user.getUserName() == null || user.getUserName().isEmpty() ||
                 user.getUserPW() == null || user.getUserPW().isEmpty() ||
                 user.getFullName() == null || user.getFullName().isEmpty() ||
@@ -68,6 +70,12 @@ public class UserController {
         }
 
         try {
+            if (!profilePicture.isEmpty()) {
+                String filename = user.getUserName() + "_profile.jpg";
+                String filePath = fileStorageService.storeFile(profilePicture, filename);
+                user.setProfilePicturePath(filePath);
+            }
+
             userService.registerUser(user);
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
@@ -81,6 +89,14 @@ public class UserController {
     public String showLoginForm(Model model) {
         model.addAttribute("user", new User());
         return "login";
+    }
+
+    @RequestMapping(value = "/upload-picture", method = RequestMethod.POST)
+    public String uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) {
+        String filename = username + "_profile.jpg";
+        String filePath = fileStorageService.storeFile(file, filename);
+        userService.updateUserProfilePicture(username, filePath);
+        return "redirect:/profile?username=" + username;
     }
 
 
@@ -108,7 +124,7 @@ public class UserController {
 
             List<Invitation> invitations = invitationService.findInvitationsByUser(user);
             model.addAttribute("invitations", invitations);
-
+            model.addAttribute("profilePicturePath", user.getProfilePicturePath());
         } else {
             model.addAttribute("error", "User not found");
         }

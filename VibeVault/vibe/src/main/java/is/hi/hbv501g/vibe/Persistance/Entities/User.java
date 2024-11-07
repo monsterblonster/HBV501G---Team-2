@@ -44,6 +44,7 @@ public class User {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> ownedEvents;
 
+    private String profilePicturePath;
 
     public User() {}
 
@@ -106,5 +107,13 @@ public class User {
     public String getConfirmPassword() { return confirmPassword; }
 
     public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
+
+    public String getProfilePicturePath() {
+        return profilePicturePath;
+    }
+
+    public void setProfilePicturePath(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath;
+    }
     
 }
