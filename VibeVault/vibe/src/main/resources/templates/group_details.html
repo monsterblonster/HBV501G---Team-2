@@ -70,9 +70,7 @@
                 <tbody>
                   <tr th:each="event : ${group.groupEvents}">
                     <td th:text="${event.name}">Event Name</td>
-                    <td th:text="${#dates.format(event.date, 'yyyy-MM-dd')}">
-                      Event Date
-                    </td>
+                    <!-- <td th:text="${{event.datetime)}">Event Date</td> -->
                     <td>
                       <a
                         th:href="@{'/events/' + ${event.id} + '/details'}"

@@ -16,7 +16,7 @@ import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Services.EventService;
 import is.hi.hbv501g.vibe.Services.GroupService;
 import is.hi.hbv501g.vibe.Services.UserService;
-
+import java.time.LocalDateTime;
 
 
 @Controller
@@ -43,12 +43,12 @@ public class EventController {
     }
 
     @RequestMapping(value = "/create", method=RequestMethod.POST)
-    public String createEvent(@RequestParam("username") String username, @RequestParam("groupname") String groupname, @ModelAttribute("event") Event event) {
+    public String createEvent(@RequestParam("username") String username, @RequestParam("groupname") String groupname, @ModelAttribute("event") Event event,  @RequestParam("datetime") LocalDateTime datetime) {
         User creator = userService.findUserByUsername(username).get();
         Group group = groupService.findByGroupName(groupname).get();
         event.setGroup(group);
         event.setCreator(creator);
-        event.setDate(new Date());
+        event.setDate(datetime);
         eventService.save(event);
         return "redirect:/groups/" + groupname + "/events?username=" + username;
     }

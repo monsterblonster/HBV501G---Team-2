@@ -1,6 +1,7 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
-import java.util.Date;
+//import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class Event {
 
     public Event(){}
 
-    public Event(String name, Date date, String description, String status, Group group, User creator){
+    public Event(String name, LocalDateTime date, String description, String status, Group group, User creator){
         this.name = name;
         this.date = date;
         this.description = description;
@@ -38,12 +39,12 @@ public class Event {
         this.comments = new ArrayList<Comment>();
         this.participants = new ArrayList<User>();
         this.participants.add(this.creator);
-        this.timeCreated = new Date();
+        this.timeCreated = LocalDateTime.now();
     }
     
     private String name;
-    private Date timeCreated;
-    private Date date;
+    private LocalDateTime timeCreated;
+    private LocalDateTime date;
     private String description;
     private String status;
 
@@ -72,11 +73,11 @@ public class Event {
         this.id = id;
     }
     
-    public Date getTimeCreated() {
+    public LocalDateTime getTimeCreated() {
         return timeCreated;
     }
 
-    public void setTimeCreated(Date timeCreated) {
+    public void setTimeCreated(LocalDateTime timeCreated) {
         this.timeCreated = timeCreated;
     }
 
@@ -102,10 +103,10 @@ public class Event {
     public void setName(String name) {
         this.name = name;
     }
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
     public String getDescription() {
