@@ -24,11 +24,13 @@
       <input type="text" th:field="*{status}" /><br />
       <div class="mb-3">
         <label for="datetime" class="form-label">Select Date and Time</label>
+        <!--TODO LAGA DATETIME FORMATTING-->
         <input
           type="text"
           id="datetime"
           name="datetime"
           class="form-control"
+          th:value="${#temporals.format(event.datetime, 'yyyy-MM-dd')}"
           placeholder="Select Date and Time"
         />
       </div>
@@ -42,7 +44,7 @@
   <script>
     flatpickr("#datetime", {
       enableTime: true,
-      dateFormat: "d-m-y",
+      dateFormat: "Y-m-d H:i",
       time_24hr: true,
     });
   </script>
