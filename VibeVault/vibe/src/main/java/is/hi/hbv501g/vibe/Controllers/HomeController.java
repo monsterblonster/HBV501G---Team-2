@@ -29,22 +29,9 @@ public class HomeController {
 	// ekki spurja ég hef ekki hugmynd, sleppa home page kóði
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ResponseEntity<Void> homePage() {
-    // Explicitly redirect to /login
     return ResponseEntity.status(HttpStatus.FOUND)
-                         .header("Location", "/calendar") // breyta default landing page hér
+                         .header("Location", "/login") // breyta default landing page hér
                          .build();
 } 
-    @RequestMapping(value = "/calendar", method = RequestMethod.GET)
-    public String showCalendarPage() {
-        return "calendar";  // The name of your HTML template (calendar.html)
-    }
-
-    @RequestMapping(value = "/submit", method = RequestMethod.POST)
-    public String handleFormSubmission(@RequestParam("datetime") String datetime) {
-        // You can process the selected datetime here
-        System.out.println("Selected Date and Time: " + datetime);
-        return "redirect:/calendar";  // Redirect back to the calendar page (or a different page)
-    }
-
 
 }

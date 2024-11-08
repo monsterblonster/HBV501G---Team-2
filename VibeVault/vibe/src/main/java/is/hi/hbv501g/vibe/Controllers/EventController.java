@@ -1,6 +1,5 @@
 package is.hi.hbv501g.vibe.Controllers;
 
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +16,7 @@ import is.hi.hbv501g.vibe.Services.EventService;
 import is.hi.hbv501g.vibe.Services.GroupService;
 import is.hi.hbv501g.vibe.Services.UserService;
 import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Controller
@@ -43,7 +43,7 @@ public class EventController {
     }
 
     @RequestMapping(value = "/create", method=RequestMethod.POST)
-    public String createEvent(@RequestParam("username") String username, @RequestParam("groupname") String groupname, @ModelAttribute("event") Event event,  @RequestParam("datetime") LocalDateTime datetime) {
+    public String createEvent(@RequestParam("username") String username, @RequestParam("groupname") String groupname, @ModelAttribute("event") Event event,  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime) {
         User creator = userService.findUserByUsername(username).get();
         Group group = groupService.findByGroupName(groupname).get();
         event.setGroup(group);

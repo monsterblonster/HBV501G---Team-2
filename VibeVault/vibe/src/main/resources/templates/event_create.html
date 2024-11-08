@@ -1,51 +1,107 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
   <head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Event</title>
+
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <meta charset="UTF-8" />
-    <title>Create Event</title>
+    <!-- Flatpickr CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
   </head>
-  <body>
-    <h2 th:text="@{'Create new Event in ' + ${group.groupName}}"></h2>
-    <form
-      th:action="@{/events/create?username=} + ${user.userName} + '&groupname=' + ${group.groupName}"
-      th:object="${event}"
-      method="post"
-    >
-      <label>Event Name:</label>
-      <input type="text" th:field="*{name}" required /><br />
-      <label>Description:</label>
-      <textarea th:field="*{description}"></textarea><br />
-      <label>Status:</label>
-      <input type="text" th:field="*{status}" /><br />
-      <div class="mb-3">
-        <label for="datetime" class="form-label">Select Date and Time</label>
-        <!--TODO LAGA DATETIME FORMATTING-->
-        <input
-          type="text"
-          id="datetime"
-          name="datetime"
-          class="form-control"
-          th:value="${#temporals.format(event.datetime, 'yyyy-MM-dd')}"
-          placeholder="Select Date and Time"
-        />
-      </div>
-      <button type="submit">Create Event</button>
-    </form>
+  <body class="bg-light">
+    <div class="container mt-5">
+      <!-- Page Header -->
+      <h2
+        class="mb-4"
+        th:text="@{'Create new Event in ' + ${group.groupName}}"
+      ></h2>
+
+      <!-- Event Form -->
+      <form
+        class="card shadow p-4"
+        th:action="@{/events/create?username=} + ${user.userName} + '&groupname=' + ${group.groupName}"
+        th:object="${event}"
+        method="post"
+      >
+        <!-- Event Name -->
+        <div class="mb-3">
+          <label for="eventName" class="form-label">Event Name:</label>
+          <input
+            type="text"
+            id="eventName"
+            class="form-control"
+            th:field="*{name}"
+            placeholder="Enter event name"
+            required
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Description:</label>
+          <textarea
+            id="description"
+            class="form-control"
+            th:field="*{description}"
+            rows="3"
+            placeholder="Enter event description"
+          ></textarea>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+          <label for="status" class="form-label">Status:</label>
+          <input
+            type="text"
+            id="status"
+            class="form-control"
+            th:field="*{status}"
+            placeholder="Enter event status"
+          />
+        </div>
+
+        <!-- Date and Time Picker -->
+        <div class="mb-3">
+          <label for="datetime" class="form-label">Choose Date and Time:</label>
+          <input
+            type="text"
+            id="datetime"
+            name="datetime"
+            class="form-control"
+            th:value="${#temporals.format(appointment?.datetime, 'yyyy-MM-dd''T''HH:mm:ss')}"
+            required
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100">
+          Create Event
+        </button>
+      </form>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+      // Initialize Flatpickr
+      flatpickr("#datetime", {
+        enableTime: true,
+        dateFormat: "Y-m-d\\TH:i:S",
+        time_24hr: true,
+        altInput: true,
+        altFormat: "F j, H:i",
+      });
+    </script>
   </body>
-
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    flatpickr("#datetime", {
-      enableTime: true,
-      dateFormat: "Y-m-d H:i",
-      time_24hr: true,
-    });
-  </script>
 </html>
