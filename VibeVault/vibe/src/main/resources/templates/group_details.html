@@ -81,7 +81,7 @@
         <td th:text="${event.name}">Event Name</td>
         <td th:text="${#dates.format(event.date, 'yyyy-MM-dd')}">Event Date</td>
         <td>
-          <a th:href="@{'/events/' + ${event.id} + '/details(username=${user.userName})'}" class="btn btn-sm btn-info">Details</a>
+          <a th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}" class="btn btn-sm btn-info">Details</a>
         </td>
       </tr>
       </tbody>
@@ -89,8 +89,8 @@
   </div>
   <p th:if="${group.groupEvents.size() == 0}">No events yet for this group.</p>
 
+  <a th:href="@{'/events/create' + '?username=' + ${user.userName} + '&groupname=' + ${group.groupName}}">Create New Event</a>
   <div th:if="${user.userName == group.admin.userName}" class="mt-4">
-    <a th:href="@{'/events/create' + '(username=' + ${user.userName} + ', groupname=' + ${group.groupName} + ')'}">Create New Event</a>
     <a th:href="@{'/groups/' + ${group.id} + '/edit?username=' + ${user.userName}}" class="btn btn-sm btn-warning">Edit</a>
     <form th:action="@{'/groups/' + ${group.id} + '/delete'}" method="post" style="display:inline;">
       <input type="hidden" name="username" th:value="${user.userName}" />
