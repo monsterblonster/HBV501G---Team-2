@@ -81,7 +81,18 @@
         <td th:text="${event.name}">Event Name</td>
         <td th:text="${#dates.format(event.date, 'yyyy-MM-dd')}">Event Date</td>
         <td>
-          <a th:href="@{'/events/' + ${event.id} + '/details(username=${user.userName})'}" class="btn btn-sm btn-info">Details</a>
+          <!-- Show Join button if the user has not yet joined the event -->
+          <div th:if="${!event.participants.contains(user)}">
+            <form th:action="@{'/events/' + ${event.id} + '/join'}" method="post" style="display:inline;">
+                <input type="hidden" name="username" th:value="${user.userName}" />
+                <button type="submit" class="btn btn-sm btn-success">Join</button>
+            </form>
+          </div>
+        
+          <!-- Show Details button if the user has already joined the event -->
+          <div th:if="${event.participants.contains(user)}">
+            <a th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}" class="btn btn-sm btn-info">Details</a>
+          </div>
         </td>
       </tr>
       </tbody>

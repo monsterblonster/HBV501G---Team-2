@@ -66,9 +66,12 @@
             <td>
                 <a th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}" class="btn btn-info btn-sm">Details</a>
                 <a th:href="@{'/groups/' + ${group.groupName} + '/events?username=' + ${user.userName}}" class="btn btn-primary btn-sm">Events</a>
-                <a th:href="@{'/profile/remove-group?username=' + ${user.userName} + '&groupId=' + ${group.id}}"
-                   onclick="return confirm('Are you sure you want to leave this group?')" class="btn btn-danger btn-sm">Leave</a>
-            </td>
+                <form th:action="@{/profile/remove-group}" method="post" style="display:inline;">
+                    <input type="hidden" name="username" th:value="${user.userName}" />
+                    <input type="hidden" name="groupId" th:value="${group.id}" />
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to leave this group?');">Leave</button>
+                </form>
+                </td>
         </tr>
         </tbody>
     </table>

@@ -3,7 +3,9 @@ package is.hi.hbv501g.vibe.Controllers;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.Tag;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
+import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Repositories.TagRepository;
+import is.hi.hbv501g.vibe.Services.EventService;
 import is.hi.hbv501g.vibe.Services.GroupService;
 import is.hi.hbv501g.vibe.Services.InvitationService;
 import is.hi.hbv501g.vibe.Services.UserService;
@@ -25,6 +27,9 @@ public class GroupController {
     private final UserService userService;
     private final InvitationService invitationService;
     private final TagRepository tagRepository;
+
+    @Autowired
+    private EventService eventService;
 
     @Autowired
     public GroupController(GroupService groupService, UserService userService, InvitationService invitationService, TagRepository tagRepository) {
@@ -142,11 +147,11 @@ public class GroupController {
     @RequestMapping(value = "/{id}/remove-user", method = RequestMethod.POST)
     public String removeUser(@PathVariable("id") Long groupId, @RequestParam("username") String username, @RequestParam("currentUser") String currentUser, Model model) {
         Group group = groupService.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
+            .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
         User userToRemove = userService.findUserByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+            .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
         User adminUser = userService.findUserByUsername(currentUser)
-                .orElseThrow(() -> new IllegalArgumentException("Admin user not found with username: " + currentUser));
+            .orElseThrow(() -> new IllegalArgumentException("Admin user not found with username: " + currentUser));
 
         if (!group.getAdmin().equals(adminUser)) {
             model.addAttribute("error", "Only the admin can remove users from the group.");
@@ -158,9 +163,22 @@ public class GroupController {
             return "redirect:/groups/" + groupId + "/details?username=" + currentUser;
         }
 
-        groupService.removeUserFromGroup(userToRemove, group, adminUser);
+        // Remove user from the group
+        group.getMembers().remove(userToRemove);
+        groupService.saveGroup(group);
+
+        // Remove user from all events associated with the group
+        for (Event event : group.getGroupEvents()) {
+            if (event.getParticipants().contains(userToRemove)) {
+                event.getParticipants().remove(userToRemove);
+                eventService.save(event); // Save updated event after removing the participant
+            }
+        }
+
+        // Redirect back to the group details page
         return "redirect:/groups/" + groupId + "/details?username=" + currentUser;
     }
+
 
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.POST)
     public String deleteGroup(@PathVariable("id") Long groupId, @RequestParam("username") String currentUser, Model model) {
