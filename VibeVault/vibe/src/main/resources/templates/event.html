@@ -24,7 +24,7 @@
 
 <!-- Comments Section -->
 <h3>Comments</h3>
-<div th:each="comment : ${comments}">
+<div th:each="comment : ${event.comments}">
     <p><strong th:text="${comment.author != null ? comment.author.userName : 'Anonymous'}">Author</strong>:
         <span th:text="${comment.commentData}">Comment text</span></p>
 </div>

@@ -97,6 +97,24 @@
       <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this group?');">Delete Group</button>
     </form>
   </div>
+
+  <h3>Activity Log</h3>
+  <div th:if="${group.groupActivities.size() > 0}">
+    <table>
+      <tbody>
+        <tr th:each="activity : ${group.groupActivities}">
+          <td th:text="${activity.postTime}"></td>
+          <td>
+            <span th:text="${activity.user.userName}"></span>
+            <span th:text="${activity.descriptionString}"></span>
+            <a th:href="${activity.linkString} + ${user.userName}" th:text="${activity.typeString}"></a>
+            <span th:text="${activity.extraString}"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p th:if="${group.groupActivities.size() == 0}">No activity in the group yet...</p>
 </div>
 
 </body>

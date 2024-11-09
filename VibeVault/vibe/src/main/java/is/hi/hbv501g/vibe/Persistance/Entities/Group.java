@@ -41,6 +41,9 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Event> groupEvents = new HashSet<>();
 
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Activity> groupActivities = new HashSet<>();
+
     private Integer maxMembers;
 
     public Group() {}
@@ -123,6 +126,14 @@ public class Group {
 
     public int getCurrentMemberCount() {
         return members.size();
+    }
+
+    public Set<Activity> getGroupActivities() {
+        return groupActivities;
+    }
+
+    public void setGroupActivities(Set<Activity> groupActivities) {
+        this.groupActivities = groupActivities;
     }
 
 }

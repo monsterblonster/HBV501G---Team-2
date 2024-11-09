@@ -1,5 +1,6 @@
 package is.hi.hbv501g.vibe.Controllers;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
 import is.hi.hbv501g.vibe.Persistance.Entities.Comment;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
@@ -18,6 +20,7 @@ import is.hi.hbv501g.vibe.Services.EventService;
 import is.hi.hbv501g.vibe.Services.GroupService;
 import is.hi.hbv501g.vibe.Services.UserService;
 import is.hi.hbv501g.vibe.Services.FileStorageService;
+import is.hi.hbv501g.vibe.Services.ActivityService;
 import is.hi.hbv501g.vibe.Services.CommentService;
 
 
@@ -30,16 +33,18 @@ public class EventController {
     private final EventService eventService;
     private final FileStorageService fileStorageService;
     private final CommentService commentService;
+    private final ActivityService activityService;
 
     // hérn verður bara unnið með staka eventa, þannig búa til event, skoða event, fara í event chat
     // hver event getur verið með hlekk yfir í group-una sem hann tilheyrir
     @Autowired
-    public EventController(UserService userService, GroupService groupService, EventService eventService, FileStorageService fileStorageService, CommentService commentService) {
+    public EventController(UserService userService, GroupService groupService, EventService eventService, FileStorageService fileStorageService, CommentService commentService, ActivityService activityService) {
         this.eventService = eventService;
         this.groupService = groupService;
         this.userService = userService;
         this.fileStorageService = fileStorageService;
         this.commentService = commentService;
+        this.activityService = activityService;
     }
     @RequestMapping(value = "/create", method=RequestMethod.GET)
     public String viewCreateGroupForm(@RequestParam("username") String creatorName, @RequestParam("groupname") String groupName, Model model) {
@@ -69,6 +74,15 @@ public class EventController {
         }
 
         eventService.save(event);
+        Activity activity = new Activity();
+        activity.setGroup(group);
+        activity.setPostTime(LocalDateTime.now());
+        activity.setUser(creator);
+        activity.setDescriptionString("created a new event: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        activity.setExtraString("Click to view!");
+        activityService.save(activity);
         return "redirect:/events/" + event.getId() + "/details?username=" + username;
     }
 
@@ -80,11 +94,8 @@ public class EventController {
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
         User user = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
-        List<Comment> comments = commentService.findByEventId(eventId);
-
         model.addAttribute("event", event);
         model.addAttribute("user", user);
-        model.addAttribute("comments", comments);
         model.addAttribute("comment", new Comment());
         return "event";
     }

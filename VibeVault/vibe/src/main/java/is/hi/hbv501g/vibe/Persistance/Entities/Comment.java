@@ -16,8 +16,8 @@ public class Comment {
     public Comment() {}
 
     //should also have user id and event id.
-    public Comment(Long id, String commentData) {
-        this.id = id;
+    public Comment(String commentData, Event event) {
+        this.event = event;
         this.commentData = commentData;
     }
 
