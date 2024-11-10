@@ -1,37 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
     <title>Events</title>
-</head>
-<body>
-<h2 th:text="@{'Events in ' + ${group.groupName}}"></h2>
-<h3 th:text="@{'Member: ' + ${user.userName}}"></h3>
-<table>
-    <tr>
+  </head>
+  <body>
+    <h2 th:text="@{'Events in ' + ${group.groupName}}"></h2>
+    <h3 th:text="@{'Member: ' + ${user.userName}}"></h3>
+    <table>
+      <tr>
         <th>Event name</th>
         <th>Description</th>
         <th>Actions</th>
-    </tr>
-    <tr th:each="event : ${events}">
+      </tr>
+      <tr th:each="event : ${events}">
         <td th:text="${event.name}"></td>
         <td th:text="${event.description}"></td>
         <td th:text="${event.status}"></td>
-        <td><!-- Show Join button if the user has not yet joined the event -->
-            <div th:if="${!event.participants.contains(user)}">
-              <form th:action="@{'/events/' + ${event.id} + '/join'}" method="post" style="display:inline;">
-                  <input type="hidden" name="username" th:value="${user.userName}" />
-                  <button type="submit" class="btn btn-sm btn-success">Join</button>
-              </form>
-            </div>
-          
-            <!-- Show Details button if the user has already joined the event -->
-            <div th:if="${event.participants.contains(user)}">
-              <a th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}" class="btn btn-sm btn-info">Details</a>
-            </div>
+        <td>
+          <!-- Show Join button if the user has not yet joined the event -->
+          <div th:if="${!event.participants.contains(user)}">
+            <form
+              th:action="@{'/events/' + ${event.id} + '/join'}"
+              method="post"
+              style="display: inline"
+            >
+              <input
+                type="hidden"
+                name="username"
+                th:value="${user.userName}"
+              />
+              <button type="submit" class="btn btn-sm btn-success">Join</button>
+            </form>
+          </div>
+
+          <!-- Show Details button if the user has already joined the event -->
+          <div th:if="${event.participants.contains(user)}">
+            <a
+              th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}"
+              class="btn btn-sm btn-info"
+              >Details</a
+            >
+          </div>
         </td>
-    </tr>
-</table>
-<a th:href="@{/events/create?username=} + ${user.userName} + '&groupname=' + ${group.groupName}">Create New Event</a>
-</body>
+      </tr>
+    </table>
+    <a
+      th:href="@{/events/create?username=} + ${user.userName} + '&groupname=' + ${group.groupName}"
+      >Create New Event</a
+    >
+  </body>
 </html>

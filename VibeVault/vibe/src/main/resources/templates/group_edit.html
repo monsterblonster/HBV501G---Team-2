@@ -1,37 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Edit Group</title>
-</head>
-<body>
+  <head>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <title>Edit Group</title>
+  </head>
+  <body>
+    <nav>
+      <a th:href="@{'/groups?username=' + ${user.userName}}">Back to Groups</a>
+      |
+      <a th:href="@{'/profile?username=' + ${user.userName}}">My Profile</a>
+    </nav>
 
-<nav>
-  <a th:href="@{'/groups?username=' + ${user.userName}}">Back to Groups</a> |
-  <a th:href="@{'/profile?username=' + ${user.userName}}">My Profile</a>
-</nav>
+    <div class="container mt-4">
+      <h1>Edit Group</h1>
 
-<div class="container mt-4">
-  <h1>Edit Group</h1>
+      <form
+        th:action="@{'/groups/' + ${group.id} + '/edit'}"
+        th:object="${group}"
+        method="post"
+      >
+        <input type="hidden" th:field="*{id}" />
 
-  <form th:action="@{'/groups/' + ${group.id} + '/edit'}" th:object="${group}" method="post">
-    <input type="hidden" th:field="*{id}" />
+        <input type="hidden" name="username" th:value="${user.userName}" />
 
-    <input type="hidden" name="username" th:value="${user.userName}" />
+        <label for="groupName">Group Name:</label>
+        <input
+          type="text"
+          th:field="*{groupName}"
+          id="groupName"
+          class="form-control"
+          required
+        /><br />
 
-    <label for="groupName">Group Name:</label>
-    <input type="text" th:field="*{groupName}" id="groupName" class="form-control" required/><br/>
+        <label for="description">Description:</label>
+        <textarea
+          th:field="*{description}"
+          id="description"
+          class="form-control"
+          placeholder="Describe your group..."
+        ></textarea
+        ><br />
 
-    <label for="description">Description:</label>
-    <textarea th:field="*{description}" id="description" class="form-control" placeholder="Describe your group..."></textarea><br/>
+        <label for="maxMembers">Maximum Members:</label>
+        <input
+          type="number"
+          th:field="*{maxMembers}"
+          id="maxMembers"
+          class="form-control"
+          placeholder="Enter max members"
+          min="1"
+        /><br />
 
-    <label for="maxMembers">Maximum Members:</label>
-    <input type="number" th:field="*{maxMembers}" id="maxMembers" class="form-control" placeholder="Enter max members" min="1"/><br/>
-
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}" class="btn btn-secondary">Cancel</a>
-  </form>
-</div>
-
-</body>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a
+          th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}"
+          class="btn btn-secondary"
+          >Cancel</a
+        >
+      </form>
+    </div>
+  </body>
 </html>
