@@ -22,6 +22,13 @@
     <img th:src="@{${event.photoPath}}" alt="Event Photo" width="400" height="200">
 </div>
 
+<!-- Participating Users Section -->
+<h3>Participants</h3>
+<p th:if="${event.participants.size() == 0}">No participants yet.</p>
+<ul th:each="participant : ${event.participants}" th:if="${event.participants.size() > 0}">
+    <li th:text="${participant.userName}">Participant Username</li>
+</ul>
+
 <!-- Comments Section -->
 <h3>Comments</h3>
 <div th:each="comment : ${event.comments}">
