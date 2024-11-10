@@ -3,6 +3,7 @@ package is.hi.hbv501g.vibe.Controllers;
 import is.hi.hbv501g.vibe.Persistance.Entities.Invitation;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
+import is.hi.hbv501g.vibe.Services.EventService;
 import is.hi.hbv501g.vibe.Services.FileStorageService;
 import is.hi.hbv501g.vibe.Services.InvitationService;
 import is.hi.hbv501g.vibe.Services.UserService;
@@ -25,6 +26,9 @@ public class UserController {
 
     @Autowired
     private GroupService groupService;
+
+    @Autowired
+    private EventService eventService;
 
     @Autowired
     public UserController(UserService userService, InvitationService invitationService, FileStorageService fileStorageService) {
@@ -150,6 +154,33 @@ public class UserController {
         model.addAttribute("user", dbUser);
         model.addAttribute("group", new Group());
         return "group_create";
+    }
+
+    //allows you to leave group and removes all association
+    @RequestMapping(value = "/profile/remove-group", method = RequestMethod.POST)
+    public String removeGroup(@RequestParam("username") String username, @RequestParam("groupId") Long groupId, Model model) {
+        // Find the user and group by the provided parameters
+        User user = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+        Group group = groupService.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
+
+        // Remove user from the group
+        if (group.getMembers().contains(user)) {
+            group.getMembers().remove(user);
+            groupService.saveGroup(group);
+        }
+
+        // Remove user from all events associated with the group
+        group.getGroupEvents().forEach(event -> {
+            if (event.getParticipants().contains(user)) {
+                event.getParticipants().remove(user);
+                eventService.save(event);
+            }
+        });
+
+        // Redirect back to the profile page
+        return "redirect:/profile?username=" + username;
     }
 
     @RequestMapping(value = "/profile/edit", method = RequestMethod.GET)

@@ -86,8 +86,28 @@ public class EventController {
         model.addAttribute("user", user);
         model.addAttribute("comments", comments);
         model.addAttribute("comment", new Comment());
+        model.addAttribute("participants", event.getParticipants());
         return "event";
     }
+
+    @RequestMapping(value = "/{id}/join", method = RequestMethod.POST)
+    public String joinEvent(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model) {
+        Event event = eventService.findById(eventId)
+            .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        User user = userService.findUserByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+
+        if (event.getParticipants().contains(user)) {
+            model.addAttribute("error", "You are already a participant of this event.");
+            return "error_page";
+        }
+
+        event.getParticipants().add(user);
+        eventService.save(event);
+
+        return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
+    }
+
 
 
     @RequestMapping(value = "/{id}/details/comment", method = RequestMethod.POST)
