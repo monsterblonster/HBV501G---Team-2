@@ -1,48 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Event Details</title>
-</head>
-<body>
-<h2 th:text="${event.name}">Event Name</h2>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body class="container mt-5">
+    <div class="card p-4 shadow">
+      <!-- Event Name -->
+      <h2 class="text-primary" th:text="${event.name}">Event Name</h2>
 
-<!-- Back to Group Button -->
-<a th:href="@{'/groups/' + ${event.group.id} + '/details?username=' + ${user.userName}}" class="btn btn-secondary">Back to Group</a>
+      <!-- Back to Group Button -->
+      <div class="mb-3">
+        <a
+          th:href="@{'/groups/' + ${event.group.id} + '/details?username=' + ${user.userName}}"
+          class="btn btn-secondary"
+          >Back to Group</a
+        >
+      </div>
 
+      <!-- Event Description -->
+      <p class="mb-4" th:text="${event.description}">Event Description</p>
 
-<p th:text="${event.description}">Event Description</p>
-<p>Status: <span th:text="${event.status}">Status</span></p>
-<p>Created by: <span th:text="${event.creator != null ? event.creator.userName : 'Unknown'}">Username</span></p>
-<p>Date: <span th:text="${#dates.format(event.date, 'yyyy-MM-dd HH:mm')}">Event Date</span></p>
+      <!-- Event Status -->
+      <p class="mb-2">
+        <strong>Status:</strong> <span th:text="${event.status}">Status</span>
+      </p>
 
-<!-- Event Photo Display -->
-<div th:if="${event.photoPath}">
-    <h3>Event Photo</h3>
-    <img th:src="@{${event.photoPath}}" alt="Event Photo" width="400" height="200">
-</div>
+      <!-- Event Creator -->
+      <p class="mb-2">
+        <strong>Created by:</strong>
+        <span
+          th:text="${event.creator != null ? event.creator.userName : 'Unknown'}"
+          >Username</span
+        >
+      </p>
 
-<!-- Participating Users Section -->
-<h3>Participants</h3>
-<p th:if="${event.participants.size() == 0}">No participants yet.</p>
-<ul th:each="participant : ${event.participants}" th:if="${event.participants.size() > 0}">
-    <li th:text="${participant.userName}">Participant Username</li>
-</ul>
+      <!-- Event Date -->
+      <p class="mb-4">
+        <strong>Date:</strong>
+        <span th:text="${#dates.format(event.date, 'yyyy-MM-dd HH:mm')}"
+          >Event Date</span
+        >
+      </p>
 
-<!-- Comments Section -->
-<h3>Comments</h3>
-<div th:each="comment : ${event.comments}">
-    <p><strong th:text="${comment.author != null ? comment.author.userName : 'Anonymous'}">Author</strong>:
-        <span th:text="${comment.commentData}">Comment text</span></p>
-</div>
+      <!-- Event Photo Display -->
+      <div th:if="${event.photoPath}" class="mb-4">
+        <h4>Event Photo</h4>
+        <img
+          th:src="@{${event.photoPath}}"
+          alt="Event Photo"
+          class="img-fluid rounded"
+        />
+      </div>
 
-<!-- Comment Form -->
-<form th:action="@{'/events/' + ${event.id} + '/details/comment'}" method="post">
-    <input type="hidden" name="username" th:value="${user.userName}" />
-    <label for="commentData">Add a comment:</label>
-    <textarea id="commentData" name="commentData" placeholder="Add a comment..." required></textarea>
-    <button type="submit">Post Comment</button>
-</form>
+      <!-- Participating Users Section -->
+      <h4 class="mt-4">Participants</h4>
+      <p th:if="${event.participants.size() == 0}" class="text-muted">
+        No participants yet.
+      </p>
+      <ul
+        class="list-group mb-4"
+        th:each="participant : ${event.participants}"
+        th:if="${event.participants.size() > 0}"
+      >
+        <li class="list-group-item" th:text="${participant.userName}">
+          Participant Username
+        </li>
+      </ul>
 
-</body>
+      <!-- Comments Section -->
+      <h4 class="mt-4">Comments</h4>
+      <div th:if="${event.comments.size() == 0}" class="text-muted mb-3">
+        No comments yet.
+      </div>
+      <div
+        th:each="comment : ${event.comments}"
+        class="mb-3 border-bottom pb-2"
+      >
+        <p>
+          <strong
+            th:text="${comment.author != null ? comment.author.userName : 'Anonymous'}"
+            >Author</strong
+          >:
+          <span th:text="${comment.commentData}">Comment text</span>
+        </p>
+      </div>
+
+      <!-- Comment Form -->
+      <form
+        th:action="@{'/events/' + ${event.id} + '/details/comment'}"
+        method="post"
+        class="mt-4"
+      >
+        <input type="hidden" name="username" th:value="${user.userName}" />
+        <div class="mb-3">
+          <label for="commentData" class="form-label">Add a comment:</label>
+          <textarea
+            id="commentData"
+            name="commentData"
+            class="form-control"
+            placeholder="Add a comment..."
+            rows="3"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+      </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
