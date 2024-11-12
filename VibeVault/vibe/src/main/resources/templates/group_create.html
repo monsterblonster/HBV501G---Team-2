@@ -1,26 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Create Group</title>
-</head>
-<body>
-<h2 th:text="@{'Create a New Group ' + ${user.userName}}"></h2>
-<form th:action="@{'/groups/create?username=' + ${user.userName}}" th:object="${group}" method="post">
-  <label for="groupName">Group Name:</label>
-  <input type="text" th:field="*{groupName}" id="groupName" required/><br/>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Group</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h2 th:text="@{'Create a New Group ' + ${user.userName}}"></h2>
+      <form
+        th:action="@{'/groups/create?username=' + ${user.userName}}"
+        th:object="${group}"
+        method="post"
+      >
+        <label class="form-label">Group Name</label>
+        <input
+          type="text"
+          th:field="*{groupName}"
+          class="form-control"
+          required
+        />
 
-  <label for="description">Description:</label>
-  <textarea th:field="*{description}" id="description" placeholder="Describe your group..."></textarea><br/>
+        <label class="form-label">Description</label>
+        <textarea
+          th:field="*{description}"
+          class="form-control"
+          rows="3"
+          placeholder="Describe your group..."
+        ></textarea>
 
-  <label for="tags">Tags (comma-separated):</label>
-  <input type="text" name="tags" id="tags" placeholder="e.g., Music, Art, Coding"/><br/>
+        <label class="form-label">Tags</label>
+        <input
+          type="text"
+          name="tags"
+          class="form-control"
+          placeholder="e.g., Music, Art, Coding"
+        />
 
-  <label for="maxMembers">Maximum Members:</label>
-  <input type="number" th:field="*{maxMembers}" id="maxMembers" placeholder="Enter max members" min="1"/><br/>
+        <label class="form-label">Maximum Members</label>
+        <input
+          type="number"
+          th:field="*{maxMembers}"
+          class="form-control"
+          placeholder="Enter max members"
+          min="1"
+        />
 
-  <button type="submit">Create Group</button>
-</form>
-
-</body>
+        <button type="submit" class="btn btn-primary">Create Group</button>
+      </form>
+    </div>
+  </body>
 </html>
