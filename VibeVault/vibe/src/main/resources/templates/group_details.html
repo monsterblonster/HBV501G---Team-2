@@ -79,10 +79,8 @@
                         <tr th:each="event : ${group.groupEvents}">
                           <td th:text="${event.name}">Event Name</td>
                           <td
-                            th:value="${#temporals.format(appointment?.datetime, 'yyyy-MM-dd''T''HH:mm:ss')}"
-                          >
-                            Event Date
-                          </td>
+                            th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+                          ></td>
                           <td>
                             <div th:if="${!event.participants.contains(user)}">
                               <form

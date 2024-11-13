@@ -27,6 +27,7 @@
           <tr>
             <th>Event Name</th>
             <th>Description</th>
+            <th>Date</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -35,6 +36,9 @@
           <tr th:each="event : ${events}">
             <td th:text="${event.name}"></td>
             <td th:text="${event.description}"></td>
+            <td
+              th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+            ></td>
             <td th:text="${event.status}"></td>
             <td>
               <!-- Show Join button if the user has not yet joined the event -->
