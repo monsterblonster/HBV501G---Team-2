@@ -76,8 +76,8 @@ public class UserController {
         try {
             if (!profilePicture.isEmpty()) {
                 String filename = user.getUserName() + "_profile.jpg";
-                String filePath = fileStorageService.storeFile(profilePicture, filename);
-                user.setProfilePicturePath(filePath);
+                String filePath = fileStorageService.storeFile(profilePicture, filename, false);
+                user.setProfilePicturePath("/images/users/" + filename);
             }
 
             userService.registerUser(user);
@@ -98,8 +98,8 @@ public class UserController {
     @RequestMapping(value = "/upload-picture", method = RequestMethod.POST)
     public String uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) {
         String filename = username + "_profile.jpg";
-        String filePath = fileStorageService.storeFile(file, filename);
-        userService.updateUserProfilePicture(username, filePath);
+        String filePath = fileStorageService.storeFile(file, filename, false);
+        userService.updateUserProfilePicture(username, "/images/users/" + filename);
         return "redirect:/profile?username=" + username;
     }
 

@@ -9,45 +9,42 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import net.coobird.thumbnailator.Thumbnails;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 
 @Service
 public class FileStorageServiceImplementation implements FileStorageService {
 
-    // Define an absolute path for the uploads directory
-    private final Path fileStorageLocation = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/uploads");
+    // separate directories for user and event images
+    private final Path userImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/users");
+    private final Path eventImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/events");
 
     private static final int IMAGE_WIDTH = 200;
     private static final int IMAGE_HEIGHT = 200;
 
     @Override
-    public String storeFile(MultipartFile file, String filename) {
+    public String storeFile(MultipartFile file, String filename, boolean isEvent) {
+        Path storageLocation = isEvent ? eventImageLocation : userImageLocation;
+
         try {
-            if (!Files.exists(fileStorageLocation)) {
-                Files.createDirectories(fileStorageLocation);
+            if (!Files.exists(storageLocation)) {
+                Files.createDirectories(storageLocation);
             }
 
-            Path targetLocation = fileStorageLocation.resolve(filename);
-            
+            Path targetLocation = storageLocation.resolve(filename);
+
             File targetFile = targetLocation.toFile();
             if (targetFile.exists() && !targetFile.canWrite()) {
                 throw new IOException("Cannot write to target file: " + targetLocation);
             }
 
-            // Use Thumbnails to resize and save the image
             Thumbnails.of(file.getInputStream())
                     .size(IMAGE_WIDTH, IMAGE_HEIGHT)
                     .toFile(targetFile);
 
-            return "/uploads/" + filename;
+            return (isEvent ? "/events/" : "/users/") + filename;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,9 +52,11 @@ public class FileStorageServiceImplementation implements FileStorageService {
         }
     }
 
+
+
     @Override
     public String getFilePath(String filename) {
-        return fileStorageLocation.resolve(filename).toString();
+        return userImageLocation.resolve(filename).toString();
     }
 }
 

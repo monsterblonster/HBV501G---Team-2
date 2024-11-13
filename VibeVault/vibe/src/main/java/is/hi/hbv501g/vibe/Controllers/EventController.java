@@ -1,8 +1,7 @@
 package is.hi.hbv501g.vibe.Controllers;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +20,6 @@ import is.hi.hbv501g.vibe.Services.UserService;
 import is.hi.hbv501g.vibe.Services.FileStorageService;
 import is.hi.hbv501g.vibe.Services.ActivityService;
 import is.hi.hbv501g.vibe.Services.CommentService;
-import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
@@ -60,31 +58,33 @@ public class EventController {
             @RequestParam("groupname") String groupname,
             @RequestParam("eventPhoto") MultipartFile eventPhoto,
             @ModelAttribute("event") Event event,
-					  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime){
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 
-        User creator = userService.findUserByUsername(username).orElse(null);
-        Group group = groupService.findByGroupName(groupname).orElse(null);
-        event.setGroup(group);
-        event.setCreator(creator);
-        event.setDate(datetime);
+            @RequestParam("datetime") LocalDateTime datetime){
+                User creator = userService.findUserByUsername(username).orElse(null);
+                Group group = groupService.findByGroupName(groupname).orElse(null);
+                event.setGroup(group);
+                event.setCreator(creator);
+                event.setDate(datetime);
 
-        if (eventPhoto != null && !eventPhoto.isEmpty()) {
-            String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
-            String photoPath = fileStorageService.storeFile(eventPhoto, filename);
-            event.setPhotoPath(photoPath);
-        }
-        eventService.save(event);
-        Activity activity = new Activity();
-        activity.setGroup(group);
-        activity.setPostTime(LocalDateTime.now());
-        activity.setUser(creator);
-        activity.setDescriptionString("created a new event: ");
-        activity.setTypeString(event.getName());
-        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
-        activity.setExtraString("Click to view!");
-        activityService.save(activity);
-        return "redirect:/events/" + event.getId() + "/details?username=" + username;
-    }
+                if (eventPhoto != null && !eventPhoto.isEmpty()) {
+                    String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
+                    String photoPath = fileStorageService.storeFile(eventPhoto, filename, true);
+                    event.setPhotoPath(photoPath);
+                }
+
+                eventService.save(event);
+                Activity activity = new Activity();
+                activity.setGroup(group);
+                activity.setPostTime(LocalDateTime.now());
+                activity.setUser(creator);
+                activity.setDescriptionString("created a new event: ");
+                activity.setTypeString(event.getName());
+                activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+                activity.setExtraString("Click to view!");
+                activityService.save(activity);
+                return "redirect:/events/" + event.getId() + "/details?username=" + username;
+            }
 
 
 
