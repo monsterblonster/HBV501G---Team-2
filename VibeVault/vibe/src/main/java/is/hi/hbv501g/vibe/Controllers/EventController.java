@@ -70,7 +70,7 @@ public class EventController {
                 if (eventPhoto != null && !eventPhoto.isEmpty()) {
                     String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
                     String photoPath = fileStorageService.storeFile(eventPhoto, filename, true);
-                    event.setPhotoPath(photoPath);
+                    event.setPhotoPath("/images/events/" + filename);
                 }
 
                 eventService.save(event);

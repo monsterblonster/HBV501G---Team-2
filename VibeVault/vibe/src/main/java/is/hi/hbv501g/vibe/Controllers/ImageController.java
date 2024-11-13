@@ -38,7 +38,7 @@ public class ImageController {
     @RequestMapping(value = "/events/{filename:.+}", method = RequestMethod.GET)
     public ResponseEntity<Resource> serveEventImage(@PathVariable String filename) {
         try {
-            Path filePath = eventImageLocation.resolve(filename).normalize();
+            Path filePath = Paths.get(System.getProperty("user.dir") + "/uploads/events").resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() || resource.isReadable()) {
