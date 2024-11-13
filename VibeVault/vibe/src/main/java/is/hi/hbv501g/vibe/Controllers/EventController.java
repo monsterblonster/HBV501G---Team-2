@@ -60,13 +60,12 @@ public class EventController {
             @RequestParam("groupname") String groupname,
             @RequestParam("eventPhoto") MultipartFile eventPhoto,
             @ModelAttribute("event") Event event,
-					  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime)
+					  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime){
 
         User creator = userService.findUserByUsername(username).orElse(null);
         Group group = groupService.findByGroupName(groupname).orElse(null);
         event.setGroup(group);
         event.setCreator(creator);
-        event.setDate(new Date());
         event.setDate(datetime);
 
         if (eventPhoto != null && !eventPhoto.isEmpty()) {
@@ -138,3 +137,4 @@ public class EventController {
     }
 
 }
+
