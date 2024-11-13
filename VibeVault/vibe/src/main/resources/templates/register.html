@@ -2,117 +2,89 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <title>Register</title>
     <!-- Bootstrap CSS -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
     />
-    <title>Register</title>
   </head>
-  <body>
-    <div class="container mt-4">
-      <h2>Register</h2>
+  <body class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow" style="width: 400px">
+      <h2 class="text-center mb-4">Register</h2>
 
-      <div th:if="${error}" class="alert alert-danger" role="alert">
-        <p th:text="${error}"></p>
-      </div>
+      <!-- Error Alert -->
+      <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
+      <!-- Registration Form -->
       <form
         th:action="@{/register}"
         th:object="${user}"
         method="post"
-        class="form-group"
+        enctype="multipart/form-data"
       >
-        <label for="fullName">Full Name:</label>
         <input
           type="text"
           th:field="*{fullName}"
-          id="fullName"
-          class="form-control"
-          placeholder="Enter full name"
+          class="form-control mb-2"
+          placeholder="Full Name"
           required
         />
-
-        <label for="address">Address:</label>
         <input
           type="text"
           th:field="*{address}"
-          id="address"
-          class="form-control"
-          placeholder="Enter address"
+          class="form-control mb-2"
+          placeholder="Address"
           required
         />
-
-        <label for="phoneNumber">Phone Number:</label>
         <input
           type="text"
           th:field="*{phoneNumber}"
-          id="phoneNumber"
-          class="form-control"
-          placeholder="Enter phone number"
+          class="form-control mb-2"
+          placeholder="Phone Number"
           required
         />
-
-        <label for="emailAddress">Email Address:</label>
         <input
           type="email"
           th:field="*{emailAddress}"
-          id="emailAddress"
-          class="form-control"
-          placeholder="Enter email address"
+          class="form-control mb-2"
+          placeholder="Email Address"
           required
         />
-
-        <label for="userName">Username:</label>
         <input
           type="text"
           th:field="*{userName}"
-          id="userName"
-          class="form-control"
-          placeholder="Enter username"
+          class="form-control mb-2"
+          placeholder="Username"
           required
         />
-
-        <label for="userPW">Password:</label>
         <input
           type="password"
           th:field="*{userPW}"
-          id="userPW"
-          class="form-control"
-          placeholder="Enter password"
+          class="form-control mb-2"
+          placeholder="Password"
           required
         />
-
-        <label for="confirmPassword">Confirm Password:</label>
         <input
           type="password"
           th:field="*{confirmPassword}"
-          id="confirmPassword"
-          class="form-control"
-          placeholder="Confirm password"
+          class="form-control mb-3"
+          placeholder="Confirm Password"
           required
         />
-
-        <label for="confirmPassword">Confirm Password:</label>
-        <input
-          type="password"
-          th:field="*{confirmPassword}"
-          id="confirmPassword"
-          class="form-control"
-          placeholder="Confirm password"
-          required
-        />
-
-        <label for="profilePicture">Upload Profile Picture:</label>
         <input
           type="file"
           id="profilePicture"
           name="profilePicture"
+          class="form-control mb-3"
           accept="image/*"
-        /><br />
+        />
 
-        <button type="submit" class="btn btn-primary mt-3">Register</button>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100">Register</button>
       </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
