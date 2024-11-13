@@ -1,4 +1,3 @@
-<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -43,9 +42,11 @@
       <!-- Event Date -->
       <p class="mb-4">
         <strong>Date:</strong>
-        <span th:text="${#dates.format(event.date, 'yyyy-MM-dd HH:mm')}"
-          >Event Date</span
+        <span
+          th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
         >
+          Event Date
+        </span>
       </p>
 
       <!-- Event Photo Display -->

@@ -79,7 +79,7 @@
                         <tr th:each="event : ${group.groupEvents}">
                           <td th:text="${event.name}">Event Name</td>
                           <td
-                            th:text="${#dates.format(event.date, 'yyyy-MM-dd')}"
+                            th:value="${#temporals.format(appointment?.datetime, 'yyyy-MM-dd''T''HH:mm:ss')}"
                           >
                             Event Date
                           </td>

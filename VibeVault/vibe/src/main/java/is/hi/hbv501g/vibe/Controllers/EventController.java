@@ -90,6 +90,7 @@ public class EventController {
 
     @RequestMapping(value = "/{id}/details", method = RequestMethod.GET)
     public String eventPage(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model) {
+					  
         Event event = eventService.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
         User user = userService.findUserByUsername(username)
