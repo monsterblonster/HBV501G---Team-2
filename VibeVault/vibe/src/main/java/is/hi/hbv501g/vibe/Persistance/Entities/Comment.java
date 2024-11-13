@@ -28,14 +28,6 @@ public class Comment {
     @JoinColumn(name = "author_id")
     private User author;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getCommentData() {
         return commentData;
     }
