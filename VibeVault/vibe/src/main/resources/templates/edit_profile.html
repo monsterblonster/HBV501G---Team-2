@@ -1,90 +1,101 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Edit Profile</title>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-      rel="stylesheet"
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Profile</title>
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+          rel="stylesheet"
+  />
+  <style>
+    .form-control {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-4">
+  <h2>Edit Profile</h2>
+  <form th:action="@{/profile/edit}" th:object="${user}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{ID}" />
+    <input type="hidden" name="username" th:value="${user.userName}" />
+
+    <label for="fullName" class="form-label">Full Name</label>
+    <input
+            type="text"
+            th:field="*{fullName}"
+            id="fullName"
+            class="form-control"
+            required
     />
-    <style>
-      .form-control {
-        margin-bottom: 1rem;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container mt-4">
-      <h2>Edit Profile</h2>
-      <form th:action="@{/profile/edit}" th:object="${user}" method="post">
-        <input type="hidden" th:field="*{ID}" />
-        <input type="hidden" name="username" th:value="${user.userName}" />
 
-        <label class="form-label">Full Name</label>
-        <input
-          type="text"
-          th:field="*{fullName}"
-          class="form-control"
-          required
-        />
+    <label for="address" class="form-label">Address</label>
+    <input
+            type="text"
+            th:field="*{address}"
+            id="address"
+            class="form-control"
+            required
+    />
 
-        <label class="form-label">Address</label>
-        <input
-          type="text"
-          th:field="*{address}"
-          class="form-control"
-          required
-        />
+    <label for="phoneNumber" class="form-label">Phone Number</label>
+    <input
+            type="text"
+            th:field="*{phoneNumber}"
+            id="phoneNumber"
+            class="form-control"
+            required
+    />
 
-        <label class="form-label">Phone Number</label>
-        <input
-          type="text"
-          th:field="*{phoneNumber}"
-          class="form-control"
-          required
-        />
+    <label for="emailAddress" class="form-label">Email Address</label>
+    <input
+            type="email"
+            th:field="*{emailAddress}"
+            id="emailAddress"
+            class="form-control"
+            required
+    />
 
-        <label class="form-label">Email Address</label>
-        <input
-          type="email"
-          th:field="*{emailAddress}"
-          class="form-control"
-          required
-        />
+    <label for="userName" class="form-label">Username</label>
+    <input
+            type="text"
+            th:field="*{userName}"
+            id="userName"
+            class="form-control"
+            required
+    />
 
-        <label class="form-label">Username</label>
-        <input
-          type="text"
-          th:field="*{userName}"
-          class="form-control"
-          required
-        />
+    <label for="userPW" class="form-label">New Password</label>
+    <input
+            type="password"
+            th:field="*{userPW}"
+            id="userPW"
+            class="form-control"
+    />
 
-        <label class="form-label">New Password</label>
-        <input type="password" th:field="*{userPW}" class="form-control" />
+    <label for="confirmPassword" class="form-label">Confirm Password</label>
+    <input
+            type="password"
+            th:field="*{confirmPassword}"
+            id="confirmPassword"
+            class="form-control"
+    />
 
-        <label class="form-label">Confirm Password</label>
-        <input
-          type="password"
-          th:field="*{confirmPassword}"
-          class="form-control"
-        />
-        <label class="form-label"> Profile Picture </label>
-        <input
-          type="file"
-          id="profilePicture"
-          name="profilePicture"
-          class="form-control mb-3"
-          accept="image/*"
-        />
+    <label for="profilePicture" class="form-label">Profile Picture</label>
+    <input
+            type="file"
+            id="profilePicture"
+            name="profilePicture"
+            class="form-control mb-3"
+            accept="image/*"
+    />
 
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a
-          th:href="@{'/profile?username=' + ${user.userName}}"
-          class="btn btn-secondary"
-          >Cancel</a
-        >
-      </form>
-    </div>
-  </body>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a
+            th:href="@{'/profile?username=' + ${user.userName}}"
+            class="btn btn-secondary"
+    >Cancel</a>
+  </form>
+</div>
+</body>
 </html>

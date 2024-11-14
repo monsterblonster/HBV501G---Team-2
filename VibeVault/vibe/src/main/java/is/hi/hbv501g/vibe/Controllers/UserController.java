@@ -76,7 +76,7 @@ public class UserController {
         try {
             if (!profilePicture.isEmpty()) {
                 String filename = user.getUserName() + "_profile.jpg";
-                String filePath = fileStorageService.storeFile(profilePicture, filename, false);
+                String filePath = fileStorageService.storeFile(profilePicture, filename, "user");
                 user.setProfilePicturePath("/images/users/" + filename);
             }
 
@@ -98,7 +98,7 @@ public class UserController {
     @RequestMapping(value = "/upload-picture", method = RequestMethod.POST)
     public String uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) {
         String filename = username + "_profile.jpg";
-        String filePath = fileStorageService.storeFile(file, filename, false);
+        String filePath = fileStorageService.storeFile(file, filename, "user");
         userService.updateUserProfilePicture(username, "/images/users/" + filename);
         return "redirect:/profile?username=" + username;
     }
@@ -192,7 +192,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/profile/edit", method = RequestMethod.POST)
-    public String updateProfile(@ModelAttribute("user") User user, Model model) {
+    public String updateProfile(@ModelAttribute("user") User user, @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture, Model model) {
         if (!user.getUserPW().isEmpty() && !user.getUserPW().equals(user.getConfirmPassword())) {
             model.addAttribute("error", "New Password and Confirm Password do not match.");
             return "edit_profile";
@@ -210,6 +210,13 @@ public class UserController {
         if (user.getUserPW() != null && !user.getUserPW().isEmpty()) {
             existingUser.setUserPW(user.getUserPW());
         }
+
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            String filename = user.getUserName() + "_profile.jpg";
+            String filePath = fileStorageService.storeFile(profilePicture, filename, "user");
+            existingUser.setProfilePicturePath("/images/users/" + filename);
+        }
+
 
         try {
             userService.updateUser(existingUser);

@@ -20,13 +20,18 @@ public class FileStorageServiceImplementation implements FileStorageService {
     // separate directories for user and event images
     private final Path userImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/users");
     private final Path eventImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/events");
+    private final Path groupImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/groups");
 
     private static final int IMAGE_WIDTH = 200;
     private static final int IMAGE_HEIGHT = 200;
 
     @Override
-    public String storeFile(MultipartFile file, String filename, boolean isEvent) {
-        Path storageLocation = isEvent ? eventImageLocation : userImageLocation;
+    public String storeFile(MultipartFile file, String filename, String type) {
+        Path storageLocation = switch (type) {
+            case "event" -> eventImageLocation;
+            case "group" -> groupImageLocation;
+            default -> userImageLocation;
+        };
 
         try {
             if (!Files.exists(storageLocation)) {
@@ -44,7 +49,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
                     .size(IMAGE_WIDTH, IMAGE_HEIGHT)
                     .toFile(targetFile);
 
-            return (isEvent ? "/events/" : "/users/") + filename;
+            return "/images/" + type + "s/" + filename;
 
         } catch (IOException e) {
             e.printStackTrace();

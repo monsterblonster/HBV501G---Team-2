@@ -5,17 +5,14 @@ import is.hi.hbv501g.vibe.Persistance.Entities.Tag;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Repositories.TagRepository;
-import is.hi.hbv501g.vibe.Services.EventService;
-import is.hi.hbv501g.vibe.Services.GroupService;
-import is.hi.hbv501g.vibe.Services.InvitationService;
-import is.hi.hbv501g.vibe.Services.UserService;
+import is.hi.hbv501g.vibe.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 
@@ -27,16 +24,18 @@ public class GroupController {
     private final UserService userService;
     private final InvitationService invitationService;
     private final TagRepository tagRepository;
+    private final FileStorageService fileStorageService;
 
     @Autowired
     private EventService eventService;
 
     @Autowired
-    public GroupController(GroupService groupService, UserService userService, InvitationService invitationService, TagRepository tagRepository) {
+    public GroupController(GroupService groupService, UserService userService, InvitationService invitationService, TagRepository tagRepository, FileStorageService fileStorageService) {
         this.groupService = groupService;
         this.userService = userService;
         this.invitationService = invitationService;
         this.tagRepository = tagRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
@@ -52,6 +51,7 @@ public class GroupController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String createGroup(@RequestParam("username") String username,
                               @RequestParam(value = "tags", required = false) String tags,
+                              @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture,
                               @ModelAttribute("group") Group group) {
         User creator = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
@@ -69,10 +69,16 @@ public class GroupController {
         }
         group.setTags(tagSet);
 
-        groupService.createGroup(group);
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            String filename = group.getGroupName() + "_profile.jpg";
+            String filePath = fileStorageService.storeFile(profilePicture, filename, "group");
+            group.setProfilePicturePath(filePath);
+        }
 
+        groupService.createGroup(group);
         return "redirect:/profile?username=" + creator.getUserName();
     }
+
 
     @RequestMapping(value = "/{id}/invite", method = RequestMethod.POST)
     public String inviteUser(@PathVariable("id") Long groupId, @RequestParam("username") String invitedUsername, @RequestParam("currentUser") String currentUsername, Model model) {
@@ -132,7 +138,9 @@ public class GroupController {
                             @RequestParam("groupName") String groupName,
                             @RequestParam("description") String description,
                             @RequestParam("maxMembers") Integer maxMembers,
-                            @RequestParam("username") String username) {
+                            @RequestParam("username") String username,
+                            @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture) {
+
         Group group = groupService.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
 
@@ -140,9 +148,16 @@ public class GroupController {
         group.setDescription(description);
         group.setMaxMembers(maxMembers);
 
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            String filename = group.getGroupName() + "_profile.jpg";
+            String filePath = fileStorageService.storeFile(profilePicture, filename, "group");
+            group.setProfilePicturePath(filePath);
+        }
+
         groupService.saveGroup(group);
         return "redirect:/groups/" + groupId + "/details?username=" + username;
     }
+
 
     @RequestMapping(value = "/{id}/remove-user", method = RequestMethod.POST)
     public String removeUser(@PathVariable("id") Long groupId, @RequestParam("username") String username, @RequestParam("currentUser") String currentUser, Model model) {

@@ -23,6 +23,7 @@
         th:action="@{'/groups/' + ${group.id} + '/edit'}"
         th:object="${group}"
         method="post"
+        enctype="multipart/form-data"
       >
         <input type="hidden" th:field="*{id}" />
 
@@ -54,6 +55,15 @@
           class="form-control"
           placeholder="Enter max members"
           min="1"
+        /><br />
+
+        <label for="profilePicture" class="form-label">Group Profile Picture:</label>
+        <input
+                type="file"
+                id="profilePicture"
+                name="profilePicture"
+                class="form-control mb-3"
+                accept="image/*"
         /><br />
 
         <button type="submit" class="btn btn-primary">Save Changes</button>

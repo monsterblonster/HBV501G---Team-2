@@ -46,6 +46,8 @@ public class Group {
 
     private Integer maxMembers;
 
+    private String profilePicturePath;
+
     public Group() {}
 
     public Group(String groupName, String description, User admins, Integer maxMembers) {
@@ -135,6 +137,10 @@ public class Group {
     public void setGroupActivities(Set<Activity> groupActivities) {
         this.groupActivities = groupActivities;
     }
+
+    public String getProfilePicturePath() { return profilePicturePath; }
+
+    public void setProfilePicturePath(String profilePicturePath) { this.profilePicturePath = profilePicturePath; }
 
 }
 

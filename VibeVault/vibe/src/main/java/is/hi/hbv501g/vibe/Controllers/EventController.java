@@ -67,13 +67,17 @@ public class EventController {
                 event.setCreator(creator);
                 event.setDate(datetime);
 
+                event.getParticipants().add(creator);
+
                 if (eventPhoto != null && !eventPhoto.isEmpty()) {
                     String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
-                    String photoPath = fileStorageService.storeFile(eventPhoto, filename, true);
+                    String photoPath = fileStorageService.storeFile(eventPhoto, filename, "event");
                     event.setPhotoPath("/images/events/" + filename);
                 }
 
+
                 eventService.save(event);
+
                 Activity activity = new Activity();
                 activity.setGroup(group);
                 activity.setPostTime(LocalDateTime.now());
@@ -83,6 +87,7 @@ public class EventController {
                 activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
                 activity.setExtraString("Click to view!");
                 activityService.save(activity);
+
                 return "redirect:/events/" + event.getId() + "/details?username=" + username;
             }
 
@@ -136,6 +141,35 @@ public class EventController {
         commentService.save(comment); // Save the comment
         return "redirect:/events/" + eventId + "/details?username=" + username;
     }
+
+    @RequestMapping(value = "/{id}/delete", method = RequestMethod.POST)
+    public String deleteEvent(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model) {
+        Event event = eventService.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        User user = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+
+        // Only creator can delete event
+        if (!event.getCreator().equals(user)) {
+            model.addAttribute("error", "Only the event creator can delete this event.");
+            return "error_page";
+        }
+
+        // Log the deletion in the activity log
+        Activity activity = new Activity();
+        activity.setGroup(event.getGroup());
+        activity.setPostTime(LocalDateTime.now());
+        activity.setUser(user);
+        activity.setDescriptionString("deleted an event: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("");
+        activity.setExtraString("The event has been removed.");
+        activityService.save(activity);
+
+        eventService.delete(event);
+        return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
+    }
+
 
 }
 

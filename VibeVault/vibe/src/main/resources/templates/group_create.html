@@ -1,48 +1,61 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Create Group</title>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
-      rel="stylesheet"
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Group</title>
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+          rel="stylesheet"
+  />
+</head>
+<body>
+<div class="container mt-4">
+  <h2 th:text="@{'Create a New Group ' + ${user.userName}}"></h2>
+  <form
+          th:action="@{'/groups/create?username=' + ${user.userName}}"
+          th:object="${group}"
+          method="post"
+          enctype="multipart/form-data"
+  >
+    <label for="groupName" class="form-label">Group Name</label>
+    <input
+            type="text"
+            th:field="*{groupName}"
+            class="form-control"
+            id="groupName"
+            required
     />
-  </head>
-  <body>
-    <div class="container mt-4">
-      <h2 th:text="@{'Create a New Group ' + ${user.userName}}"></h2>
-      <form
-        th:action="@{'/groups/create?username=' + ${user.userName}}"
-        th:object="${group}"
-        method="post"
-      >
-        <label class="form-label">Group Name</label>
-        <input
-          type="text"
-          th:field="*{groupName}"
-          class="form-control"
-          required
-        />
 
-        <label class="form-label">Description</label>
-        <textarea
-          th:field="*{description}"
-          class="form-control"
-          rows="3"
-          placeholder="Describe your group..."
-        ></textarea>
+    <label for="description" class="form-label">Description</label>
+    <textarea
+            th:field="*{description}"
+            class="form-control"
+            id="description"
+            rows="3"
+            placeholder="Describe your group..."
+    ></textarea>
 
-        <label class="form-label">Maximum Members</label>
-        <input
-          type="number"
-          th:field="*{maxMembers}"
-          class="form-control"
-          placeholder="Enter max members"
-          min="1"
-        />
+    <label for="maxMembers" class="form-label">Maximum Members</label>
+    <input
+            type="number"
+            th:field="*{maxMembers}"
+            class="form-control"
+            id="maxMembers"
+            placeholder="Enter max members"
+            min="1"
+    />
 
-        <button type="submit" class="btn btn-primary">Create Group</button>
-      </form>
-    </div>
-  </body>
+    <label for="profilePicture" class="form-label">Group Profile Picture:</label>
+    <input
+            type="file"
+            id="profilePicture"
+            name="profilePicture"
+            class="form-control mb-3"
+            accept="image/*"
+    />
+
+    <button type="submit" class="btn btn-primary">Create Group</button>
+  </form>
+</div>
+</body>
 </html>

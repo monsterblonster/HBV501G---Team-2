@@ -15,6 +15,7 @@ public class ImageController {
 
     private final Path userImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/users");
     private final Path eventImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/events");
+    private final Path groupImageLocation = Paths.get(System.getProperty("user.dir") + "/uploads/groups");
 
     @RequestMapping(value = "/users/{filename:.+}", method = RequestMethod.GET)
     public ResponseEntity<Resource> serveUserImage(@PathVariable String filename) {
@@ -38,7 +39,26 @@ public class ImageController {
     @RequestMapping(value = "/events/{filename:.+}", method = RequestMethod.GET)
     public ResponseEntity<Resource> serveEventImage(@PathVariable String filename) {
         try {
-            Path filePath = Paths.get(System.getProperty("user.dir") + "/uploads/events").resolve(filename).normalize();
+            Path filePath = eventImageLocation.resolve(filename).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/groups/{filename:.+}", method = RequestMethod.GET)
+    public ResponseEntity<Resource> serveGroupImage(@PathVariable String filename) {
+        try {
+            Path filePath = groupImageLocation.resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() || resource.isReadable()) {

@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.mapping.Set;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -58,7 +56,7 @@ public class Event {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "event_id")
     )
-    private List<User> participants;
+    private List<User> participants = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
