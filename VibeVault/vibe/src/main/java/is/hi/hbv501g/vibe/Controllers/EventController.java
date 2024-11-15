@@ -129,7 +129,7 @@ public class EventController {
 
     @RequestMapping(value = "/{id}/details/comment", method = RequestMethod.POST)
     public String addComment(@PathVariable("id") Long eventId, @ModelAttribute("comment") Comment comment, @RequestParam("username") String username) {
-        Event event = eventService.findById(eventId)
+		Event event = eventService.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with id: " + eventId));
 
         User author = userService.findUserByUsername(username)
@@ -137,6 +137,7 @@ public class EventController {
 
         comment.setEvent(event);
         comment.setAuthor(author);
+				comment.setDate(LocalDateTime.now());
 
         commentService.save(comment); // Save the comment
         return "redirect:/events/" + eventId + "/details?username=" + username;

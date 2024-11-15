@@ -1,6 +1,7 @@
 package is.hi.hbv501g.vibe.Persistance.Entities;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
@@ -11,14 +12,15 @@ public class Comment {
     
     private String commentData;
     
-    //private DateTime commentTime;
+    private LocalDateTime commentTime;
 
     public Comment() {}
 
     //should also have user id and event id.
-    public Comment(String commentData, Event event) {
+    public Comment(String commentData, Event event, LocalDateTime commentTime) {
         this.event = event;
         this.commentData = commentData;
+				this.commentTime = commentTime;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,6 +45,14 @@ public class Comment {
     public void setEvent(Event event) {
         this.event = event;
     }
+		
+		public LocalDateTime getDate() {
+			return commentTime;
+		}
+		
+		public void setDate(LocalDateTime date) {
+			this.commentTime = date;
+		}
 
     public User getAuthor() { return author; }
 

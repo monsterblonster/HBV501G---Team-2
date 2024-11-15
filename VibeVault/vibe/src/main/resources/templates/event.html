@@ -88,7 +88,9 @@
             th:text="${comment.author != null ? comment.author.userName : 'Anonymous'}"
             >Author</strong
           >:
-          <span th:text="${comment.commentData}">Comment text</span>
+          <span
+						th:text="${(event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available') + ' ' + comment.commentData}"
+          </span>
         </p>
       </div>
 
@@ -114,26 +116,18 @@
       </form>
     </div>
 
-    <div
-            th:if="${event.creator.userName == user.userName}"
-            class="mt-4">
-      <form
-              th:action="@{'/events/' + ${event.id} + '/delete'}"
-              method="post">
-        <input
-                type="hidden"
-                name="username"
-                th:value="${user.userName}" />
+    <div th:if="${event.creator.userName == user.userName}" class="mt-4">
+      <form th:action="@{'/events/' + ${event.id} + '/delete'}" method="post">
+        <input type="hidden" name="username" th:value="${user.userName}" />
         <button
-                type="submit"
-                class="btn btn-danger"
-                onclick="return confirm('Are you sure you want to delete this event?');"
+          type="submit"
+          class="btn btn-danger"
+          onclick="return confirm('Are you sure you want to delete this event?');"
         >
           Delete Event
         </button>
       </form>
     </div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
