@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "groups")
@@ -39,7 +41,8 @@ public class Group {
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Event> groupEvents = new HashSet<>();
+		@OrderBy("date")
+		private List<Event> groupEvents = new ArrayList<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Activity> groupActivities = new HashSet<>();
@@ -101,11 +104,11 @@ public class Group {
         this.members.remove(user);
     }
 
-    public Set<Event> getGroupEvents() {
+    public List<Event> getGroupEvents() {
         return groupEvents;
     }
 
-    public void setGroupEvents(Set<Event> groupEvents) {
+    public void setGroupEvents(List<Event> groupEvents) {
         this.groupEvents = groupEvents;
     }
 
