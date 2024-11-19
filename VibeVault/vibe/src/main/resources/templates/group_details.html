@@ -186,11 +186,11 @@
             >
               <table class="table table-sm">
                 <tbody>
-                <tr th:each="activity : ${group.groupActivities}">
+                <tr th:each="activity : ${activities}">
                   <td
                           class="text-muted"
-                          style="width: 150px"
-                          th:text="${activity?.getPostTime() != null ? #temporals.format(activity.getPostTime(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+                          style="width: 170px"
+                          th:text="${activity?.getPostTime() != null ? #temporals.format(activity.getPostTime(), 'yyyy-MM-dd HH:mm:ss') : 'No Date Available'}"
                   ></td>
                   <td>
                           <span

@@ -1,6 +1,7 @@
 package is.hi.hbv501g.vibe.Services.Implementation;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,6 +115,13 @@ public class ActivityServiceImplementation implements ActivityService{
         activity.setTypeString(event.getName());
         activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
         return this.save(activity);
+    }
+
+    @Override
+    public List <Activity> reversedByGroup(Group group) {
+        List<Activity> activities = this.findByGroup(group);
+        Collections.reverse(activities);
+        return activities;
     }
 
     @Override

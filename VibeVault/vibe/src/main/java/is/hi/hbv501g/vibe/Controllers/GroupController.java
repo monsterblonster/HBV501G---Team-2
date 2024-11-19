@@ -1,6 +1,7 @@
 package is.hi.hbv501g.vibe.Controllers;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
@@ -121,6 +122,8 @@ public class GroupController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
         model.addAttribute("user", user);
         model.addAttribute("group", group);
+        List<Activity> activities = activityService.reversedByGroup(group);
+        model.addAttribute("activities", activities);
         model.addAttribute("currentMemberCount", group.getCurrentMemberCount());
         model.addAttribute("maxMembers", group.getMaxMembers());
         return "group_details";
