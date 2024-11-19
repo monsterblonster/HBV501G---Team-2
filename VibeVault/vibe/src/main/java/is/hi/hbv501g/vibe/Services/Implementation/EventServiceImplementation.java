@@ -48,4 +48,9 @@ public class EventServiceImplementation implements EventService {
     public Optional<Event> findById(Long id) {
         return eventRepository.findById(id);
     }
+		
+		@Override
+    public void updateEvent(Event event) {
+        eventRepository.save(event);
+    }
 }

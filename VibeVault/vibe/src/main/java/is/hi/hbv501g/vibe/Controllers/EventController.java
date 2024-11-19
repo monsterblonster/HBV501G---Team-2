@@ -20,6 +20,7 @@ import is.hi.hbv501g.vibe.Services.UserService;
 import is.hi.hbv501g.vibe.Services.FileStorageService;
 import is.hi.hbv501g.vibe.Services.ActivityService;
 import is.hi.hbv501g.vibe.Services.CommentService;
+import java.util.List;
 
 
 @Controller
@@ -59,7 +60,6 @@ public class EventController {
             @RequestParam("eventPhoto") MultipartFile eventPhoto,
             @ModelAttribute("event") Event event,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-
             @RequestParam("datetime") LocalDateTime datetime) {
                 User creator = userService.findUserByUsername(username).orElse(null);
                 Group group = groupService.findByGroupName(groupname).orElse(null);
@@ -154,6 +154,52 @@ public class EventController {
         return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
     }
 
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
+    public String showEditEventForm(@PathVariable("id") Long eventId, Model model, @RequestParam("username") String username) {
+        Event event = eventService.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        User user = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
 
-}
+        if (!event.getCreator().equals(user)) {
+            model.addAttribute("error", "Only the userCreator can edit the event.");
+            return "error_page";
+        }
+
+        model.addAttribute("event", event);
+        model.addAttribute("user", user);
+        return "event_edit";
+    }
+
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
+    public String editGroup(
+            @RequestParam("username") String username,
+            @RequestParam("eventPhoto") MultipartFile eventPhoto,
+            @ModelAttribute("event") Event event,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime) {
+                User creator = userService.findUserByUsername(username).orElse(null);
+								
+								
+                Group group = event.getGroup();
+                event.setGroup(group);
+                event.setCreator(creator);
+                event.setDate(datetime);
+                event.getParticipants().add(creator);
+								List<Comment> comments = commentService.findByEventId(event.getId());
+								event.setComments(comments);
+
+                if (eventPhoto != null && !eventPhoto.isEmpty()) {
+                    String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
+                    String photoPath = fileStorageService.storeFile(eventPhoto, filename, "event");
+                    event.setPhotoPath("/images/events/" + filename);
+                }
+                
+                eventService.updateEvent(event);
+
+                //activityService.createEvent(group, event, creator);
+								System.out.println("Redirecting to: /events/" + event.getId() + "/details?username=" + username);
+
+                return "redirect:/events/" + event.getId() + "/details?username=" + username;
+            }
+	}
 

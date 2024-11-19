@@ -12,4 +12,5 @@ public interface EventService {
     public List<Event> findByEventGroup(Group group);
     public List<Event> findByName(String name);
     public Optional<Event> findById(Long id);
+    public void updateEvent(Event event);
 }
