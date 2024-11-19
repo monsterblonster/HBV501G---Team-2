@@ -3,6 +3,7 @@ package is.hi.hbv501g.vibe.Services;
 import java.util.List;
 import java.util.Optional;
 
+
 import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
@@ -12,6 +13,7 @@ public interface ActivityService {
     Activity save(Activity activity);
     void delete(Activity activity);
     List<Activity> findAll();
+    List<Activity> findByGroupAndPage(Group group, int pageNumber, int pageSize);
     List<Activity> findByGroup(Group group);
     Optional<Activity> findById(Long id);
     Activity base(Group group, User user);

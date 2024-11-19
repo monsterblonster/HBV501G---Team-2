@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
@@ -133,6 +136,12 @@ public class ActivityServiceImplementation implements ActivityService{
     @Override
     public List<Activity> findAll() {
         return activityRepository.findAll();
+    }
+
+    @Override
+    public List<Activity> findByGroupAndPage(Group group, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("postTime").descending());
+        return activityRepository.findAllByGroup(group, pageable);
     }
 
     @Override

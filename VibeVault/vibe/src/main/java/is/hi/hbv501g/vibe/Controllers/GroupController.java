@@ -122,11 +122,26 @@ public class GroupController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
         model.addAttribute("user", user);
         model.addAttribute("group", group);
-        List<Activity> activities = activityService.reversedByGroup(group);
+        List<Activity> activities = activityService.findByGroupAndPage(group, 0, 15);
         model.addAttribute("activities", activities);
         model.addAttribute("currentMemberCount", group.getCurrentMemberCount());
         model.addAttribute("maxMembers", group.getMaxMembers());
         return "group_details";
+    }
+
+    @RequestMapping(value = "/{id}/activity", method = RequestMethod.GET)
+    public String showGroupActivity(@PathVariable("id") Long groupId, Model model, @RequestParam("username") String username, @RequestParam("page") int pageNumber) {
+        Group group = groupService.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
+        User user = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+        model.addAttribute("user", user);
+        model.addAttribute("group", group);
+        List<Activity> activities = activityService.findByGroupAndPage(group, pageNumber, 20);
+        model.addAttribute("activities", activities);
+        model.addAttribute("currentMemberCount", group.getCurrentMemberCount());
+        model.addAttribute("maxMembers", group.getMaxMembers());
+        return "group_activity";
     }
 
     @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
