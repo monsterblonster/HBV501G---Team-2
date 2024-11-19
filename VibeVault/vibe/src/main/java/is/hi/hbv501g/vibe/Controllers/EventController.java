@@ -2,12 +2,12 @@ package is.hi.hbv501g.vibe.Controllers;
 
 import java.time.LocalDateTime;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
 import is.hi.hbv501g.vibe.Persistance.Entities.Comment;
@@ -20,7 +20,6 @@ import is.hi.hbv501g.vibe.Services.UserService;
 import is.hi.hbv501g.vibe.Services.FileStorageService;
 import is.hi.hbv501g.vibe.Services.ActivityService;
 import is.hi.hbv501g.vibe.Services.CommentService;
-import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Controller
@@ -31,18 +30,19 @@ public class EventController {
     private final EventService eventService;
     private final FileStorageService fileStorageService;
     private final CommentService commentService;
-    private final ActivityService activityService;
+    
+    @Autowired
+    private ActivityService activityService;
 
     // hérn verður bara unnið með staka eventa, þannig búa til event, skoða event, fara í event chat
     // hver event getur verið með hlekk yfir í group-una sem hann tilheyrir
     @Autowired
-    public EventController(UserService userService, GroupService groupService, EventService eventService, FileStorageService fileStorageService, CommentService commentService, ActivityService activityService) {
+    public EventController(UserService userService, GroupService groupService, EventService eventService, FileStorageService fileStorageService, CommentService commentService) {
         this.eventService = eventService;
         this.groupService = groupService;
         this.userService = userService;
         this.fileStorageService = fileStorageService;
         this.commentService = commentService;
-        this.activityService = activityService;
     }
     @RequestMapping(value = "/create", method=RequestMethod.GET)
     public String viewCreateGroupForm(@RequestParam("username") String creatorName, @RequestParam("groupname") String groupName, Model model) {
@@ -60,13 +60,12 @@ public class EventController {
             @ModelAttribute("event") Event event,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 
-            @RequestParam("datetime") LocalDateTime datetime){
+            @RequestParam("datetime") LocalDateTime datetime) {
                 User creator = userService.findUserByUsername(username).orElse(null);
                 Group group = groupService.findByGroupName(groupname).orElse(null);
                 event.setGroup(group);
                 event.setCreator(creator);
                 event.setDate(datetime);
-
                 event.getParticipants().add(creator);
 
                 if (eventPhoto != null && !eventPhoto.isEmpty()) {
@@ -74,19 +73,10 @@ public class EventController {
                     String photoPath = fileStorageService.storeFile(eventPhoto, filename, "event");
                     event.setPhotoPath("/images/events/" + filename);
                 }
-
-
+                
                 eventService.save(event);
 
-                Activity activity = new Activity();
-                activity.setGroup(group);
-                activity.setPostTime(LocalDateTime.now());
-                activity.setUser(creator);
-                activity.setDescriptionString("created a new event: ");
-                activity.setTypeString(event.getName());
-                activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
-                activity.setExtraString("Click to view!");
-                activityService.save(activity);
+                activityService.createEvent(group, event, creator);
 
                 return "redirect:/events/" + event.getId() + "/details?username=" + username;
             }
@@ -121,6 +111,7 @@ public class EventController {
 
         event.getParticipants().add(user);
         eventService.save(event);
+        activityService.joinEvent(event.getGroup(), event, user);
 
         return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
     }
@@ -138,7 +129,7 @@ public class EventController {
         comment.setEvent(event);
         comment.setAuthor(author);
 				comment.setDate(LocalDateTime.now());
-
+        activityService.eventComment(event.getGroup(), event, author);
         commentService.save(comment); // Save the comment
         return "redirect:/events/" + eventId + "/details?username=" + username;
     }
@@ -157,15 +148,7 @@ public class EventController {
         }
 
         // Log the deletion in the activity log
-        Activity activity = new Activity();
-        activity.setGroup(event.getGroup());
-        activity.setPostTime(LocalDateTime.now());
-        activity.setUser(user);
-        activity.setDescriptionString("deleted an event: ");
-        activity.setTypeString(event.getName());
-        activity.setLinkString("");
-        activity.setExtraString("The event has been removed.");
-        activityService.save(activity);
+        activityService.deleteEvent(event.getGroup(), event, user);
 
         eventService.delete(event);
         return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;

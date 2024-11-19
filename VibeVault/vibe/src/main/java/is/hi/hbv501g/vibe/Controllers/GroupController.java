@@ -1,19 +1,21 @@
 package is.hi.hbv501g.vibe.Controllers;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.Tag;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
+import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Repositories.TagRepository;
 import is.hi.hbv501g.vibe.Services.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Controller
@@ -28,6 +30,9 @@ public class GroupController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @Autowired
     public GroupController(GroupService groupService, UserService userService, InvitationService invitationService, TagRepository tagRepository, FileStorageService fileStorageService) {
@@ -76,6 +81,7 @@ public class GroupController {
         }
 
         groupService.createGroup(group);
+        activityService.createGroup(group, creator);
         return "redirect:/profile?username=" + creator.getUserName();
     }
 
@@ -84,6 +90,10 @@ public class GroupController {
     public String inviteUser(@PathVariable("id") Long groupId, @RequestParam("username") String invitedUsername, @RequestParam("currentUser") String currentUsername, Model model) {
         try {
             invitationService.createInvitation(groupId, invitedUsername);
+            Group group = groupService.findById(groupId).orElse(null);
+            User inviter = userService.findUserByUsername(currentUsername).orElse(null);
+            User invited = userService.findUserByUsername(invitedUsername).orElse(null);
+            activityService.inviteUser(group, inviter, invited);
             return "redirect:/groups/" + groupId + "/details?username=" + currentUsername;
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -153,7 +163,7 @@ public class GroupController {
             String filePath = fileStorageService.storeFile(profilePicture, filename, "group");
             group.setProfilePicturePath(filePath);
         }
-
+        activityService.editGroup(group, group.getAdmin());
         groupService.saveGroup(group);
         return "redirect:/groups/" + groupId + "/details?username=" + username;
     }
@@ -180,6 +190,7 @@ public class GroupController {
 
         // Remove user from the group
         group.getMembers().remove(userToRemove);
+        activityService.removeUser(group, adminUser, userToRemove);
         groupService.saveGroup(group);
 
         // Remove user from all events associated with the group

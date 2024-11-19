@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InvitationServiceImplementation implements InvitationService {
@@ -67,5 +68,10 @@ public class InvitationServiceImplementation implements InvitationService {
     @Override
     public List<Invitation> findInvitationsByUser(User user) {
         return invitationRepository.findByUser(user);
+    }
+
+    @Override
+    public Optional <Invitation> findById(Long id) {
+        return invitationRepository.findById(id);
     }
 }

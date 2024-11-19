@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findByUser(User user);
     Optional<Invitation> findByUserAndGroup(User user, Group group);
+    Optional<Invitation> findById(Long id);
 }

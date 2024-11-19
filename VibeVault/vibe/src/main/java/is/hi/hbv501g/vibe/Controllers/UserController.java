@@ -1,21 +1,25 @@
 package is.hi.hbv501g.vibe.Controllers;
 
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
+
 import is.hi.hbv501g.vibe.Persistance.Entities.Invitation;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
+import is.hi.hbv501g.vibe.Services.ActivityService;
 import is.hi.hbv501g.vibe.Services.EventService;
 import is.hi.hbv501g.vibe.Services.FileStorageService;
 import is.hi.hbv501g.vibe.Services.InvitationService;
 import is.hi.hbv501g.vibe.Services.UserService;
 import is.hi.hbv501g.vibe.Services.GroupService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Set;
+
 
 @Controller
 public class UserController {
@@ -23,12 +27,15 @@ public class UserController {
     private final UserService userService;
     private final InvitationService invitationService;
     private final FileStorageService fileStorageService;
-
+    
     @Autowired
     private GroupService groupService;
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @Autowired
     public UserController(UserService userService, InvitationService invitationService, FileStorageService fileStorageService) {
@@ -43,9 +50,8 @@ public class UserController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         group.setAdmin(adminUser);
-        group.getMembers().add(adminUser);
+        //group.getMembers().add(adminUser);
         groupService.createGroup(group);
-
         return "redirect:/profile?username=" + username;
     }
 
@@ -137,12 +143,15 @@ public class UserController {
 
     @RequestMapping(value = "/invitations/{id}/accept", method = RequestMethod.POST)
     public String acceptInvitation(@PathVariable("id") Long invitationId, @RequestParam("username") String username) {
+        User invited = userService.findUserByUsername(username).orElse(null);
+        activityService.acceptInvite(invitationService.findById(invitationId).orElse(null).getGroup(), invited);
         invitationService.acceptInvitation(invitationId);
         return "redirect:/profile?username=" + username;
     }
 
     @RequestMapping(value = "/invitations/{id}/decline", method = RequestMethod.POST)
     public String declineInvitation(@PathVariable("id") Long invitationId, @RequestParam("username") String username) {
+        activityService.declineInvite(invitationService.findById(invitationId).orElse(null).getGroup(), userService.findUserByUsername(username).orElse(null));
         invitationService.declineInvitation(invitationId);
         return "redirect:/profile?username=" + username;
     }

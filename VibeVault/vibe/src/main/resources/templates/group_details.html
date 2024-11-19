@@ -190,7 +190,7 @@
                   <td
                           class="text-muted"
                           style="width: 150px"
-                          th:text="${activity.postTime}"
+                          th:text="${activity?.getPostTime() != null ? #temporals.format(activity.getPostTime(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
                   ></td>
                   <td>
                           <span

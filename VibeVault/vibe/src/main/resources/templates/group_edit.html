@@ -11,7 +11,7 @@
   </head>
   <body>
     <nav>
-      <a th:href="@{'/groups?username=' + ${user.userName}}">Back to Groups</a>
+      <a th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}">Back to Group</a>
       |
       <a th:href="@{'/profile?username=' + ${user.userName}}">My Profile</a>
     </nav>
