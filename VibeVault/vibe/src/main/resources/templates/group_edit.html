@@ -10,10 +10,16 @@
     <title>Edit Group</title>
   </head>
   <body>
-    <nav>
-      <a th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}">Back to Group</a>
-      |
-      <a th:href="@{'/profile?username=' + ${user.userName}}">My Profile</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+      <div class="container">
+        <div class="navbar-nav">
+          <a
+            class="nav-link"
+            th:href="@{'/profile?username=' + ${user.userName}}"
+            >My Profile</a
+          >
+        </div>
+      </div>
     </nav>
 
     <div class="container mt-4">
@@ -57,13 +63,15 @@
           min="1"
         /><br />
 
-        <label for="profilePicture" class="form-label">Group Profile Picture:</label>
+        <label for="profilePicture" class="form-label"
+          >Group Profile Picture:</label
+        >
         <input
-                type="file"
-                id="profilePicture"
-                name="profilePicture"
-                class="form-control mb-3"
-                accept="image/*"
+          type="file"
+          id="profilePicture"
+          name="profilePicture"
+          class="form-control mb-3"
+          accept="image/*"
         /><br />
 
         <button type="submit" class="btn btn-primary">Save Changes</button>
