@@ -65,7 +65,21 @@
           </div>
           <!-- Activity Log -->
           <div>
-            <h3 class="h4">Activity Log</h3>
+            <h3 class="h4">Activity Log page: <span  th:text="${pageNumber + 1}"></span></h3>
+            <div>
+              <a
+                th:if="${pageNumber > 0}"
+                th:href="@{'/groups/' + ${group.id} + '/activity?username=' + ${user.userName} + '&page=' + ${pageNumber - 1}}"
+                class="btn btn-sm btn-info"
+              >Prev</a
+              >
+              <a
+                th:if="${activities.size() == pageSize}"
+                th:href="@{'/groups/' + ${group.id} + '/activity?username=' + ${user.userName} + '&page=' + ${pageNumber + 1}}"
+                class="btn btn-sm btn-info"
+              >Next</a
+              >
+            </div>
             <div
                     th:if="${group.groupActivities.size() > 0}"
                     class="table-responsive"

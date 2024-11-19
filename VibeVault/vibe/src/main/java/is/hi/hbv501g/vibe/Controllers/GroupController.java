@@ -122,7 +122,7 @@ public class GroupController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
         model.addAttribute("user", user);
         model.addAttribute("group", group);
-        List<Activity> activities = activityService.findByGroupAndPage(group, 0, 15);
+        List<Activity> activities = activityService.findByGroupAndPage(group, 0, 10);
         model.addAttribute("activities", activities);
         model.addAttribute("currentMemberCount", group.getCurrentMemberCount());
         model.addAttribute("maxMembers", group.getMaxMembers());
@@ -135,9 +135,12 @@ public class GroupController {
                 .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
         User user = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+        int pageSize = 20;
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("pageNumber", pageNumber);
         model.addAttribute("user", user);
         model.addAttribute("group", group);
-        List<Activity> activities = activityService.findByGroupAndPage(group, pageNumber, 20);
+        List<Activity> activities = activityService.findByGroupAndPage(group, pageNumber, pageSize);
         model.addAttribute("activities", activities);
         model.addAttribute("currentMemberCount", group.getCurrentMemberCount());
         model.addAttribute("maxMembers", group.getMaxMembers());
