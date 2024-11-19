@@ -30,7 +30,8 @@ public class Group {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private final Set<User> members = new HashSet<>();
+		@OrderBy
+    private final List<User> members = new ArrayList<>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
@@ -92,7 +93,7 @@ public class Group {
         this.admin = admin;
     }
 
-    public Set<User> getMembers() {
+    public List<User> getMembers() {
         return members;
     }
 
