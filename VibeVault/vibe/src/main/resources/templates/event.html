@@ -87,9 +87,10 @@
         <span class="fw-bold">Current Attendance Status:</span>
         <span th:text="${event.attendance}" 
               class="badge"
-						  th:classappend="${event.attendance == T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).GOING ? ' bg-success' : 
-                              (event.attendance== T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).MAYBE_GOING ? ' bg-warning text-dark' :
-                              ' bg-danger')}">
+								th:classappend="${T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).GOING.equals(event.attendance) ? ' bg-success' : 
+                (T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).MAYBE_GOING.equals(event.attendance) ? ' bg-warning text-dark' :
+                ' bg-danger')}"
+
         </span>
     </p>
 </div>
