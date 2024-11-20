@@ -25,11 +25,6 @@
       <!-- Event Description -->
       <p class="mb-4" th:text="${event.description}">Event Description</p>
 
-      <!-- Event Status -->
-      <p class="mb-2">
-        <strong>Status:</strong> <span th:text="${event.status}">Status</span>
-      </p>
-
       <!-- Event Creator -->
       <p class="mb-2">
         <strong>Created by:</strong>
@@ -51,14 +46,6 @@
 
       <!-- Event Photo Display -->
       <div th:if="${event.photoPath}" class="mb-4">
-
-        <div th:if="${!isParticipant}">
-            <p>You must join this event to see attendance details.</p>
-            <form action="/events/${event.id}/join" method="post">
-                <input type="hidden" name="username" value="${user.username}" />
-                <button type="submit">Join Event</button>
-            </form>
-        </div>
                 <h4>Event Photo</h4>
         <img
           th:src="@{${event.photoPath}}"
@@ -104,8 +91,8 @@
         <!-- Access the value (Attendance) -->
         <span th:text="${entry.value}" 
               class="badge"
-						  th:classappend="${entry.value == T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).GOING ? ' bg-success' : 
-                              (entry.value == T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).MAYBE_GOING ? ' bg-warning text-dark' : 
+						  th:classappend="${T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).GOING.equals(entry.value) ? ' bg-success' : 
+                              (T(is.hi.hbv501g.vibe.Persistance.Entities.Attendance).MAYBE_GOING.equals(entry.value) ? ' bg-warning text-dark' : 
                               ' bg-danger')}">
         </span>
     </li>
@@ -115,14 +102,6 @@
       <!-- Comments Section -->
       <h4 class="mt-4">Comments</h4>
       <div th:if="${event.comments.size() == 0}" class="text-muted mb-3">
-
-        <div th:if="${!isParticipant}">
-            <p>You must join this event to see attendance details.</p>
-            <form action="/events/${event.id}/join" method="post">
-                <input type="hidden" name="username" value="${user.username}" />
-                <button type="submit">Join Event</button>
-            </form>
-        </div>
                 No comments yet.
       </div>
       <div
@@ -161,16 +140,6 @@
         <button type="submit" class="btn btn-primary">Post Comment</button>
       </form>
     </div>
-
-    <div th:if="${event.creator.userName == user.userName}" class="mt-4">
-
-        <div th:if="${!isParticipant}">
-            <p>You must join this event to see attendance details.</p>
-            <form action="/events/${event.id}/join" method="post">
-                <input type="hidden" name="username" value="${user.username}" />
-                <button type="submit">Join Event</button>
-            </form>
-        </div>
               <form th:action="@{'/events/' + ${event.id} + '/delete'}" method="post">
         <input type="hidden" name="username" th:value="${user.userName}" />
         <button
