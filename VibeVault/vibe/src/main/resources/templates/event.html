@@ -79,12 +79,14 @@
             class="mb-3 border-bottom pb-2"
           >
             <p>
+              <span
+              th:text="${(comment?.getDate() != null ? #temporals.format(comment.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available')}"></span>
               <strong
                 th:text="${comment.author != null ? comment.author.userName : 'Anonymous'}"
                 >Author</strong
               >:
               <span
-                th:text="${(event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available') + ' ' + comment.commentData}"
+                th:text="${comment.commentData}"
               ></span>
             </p>
           </div>
