@@ -11,6 +11,9 @@ activemq-data/
 classes/
 static/
 uploads/
+node_modules/
+package-lock.json
+package.json
 
 # Log files
 jxl.log
