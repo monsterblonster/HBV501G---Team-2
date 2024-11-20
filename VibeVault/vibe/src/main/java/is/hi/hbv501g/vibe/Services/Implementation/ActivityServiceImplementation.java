@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
+import is.hi.hbv501g.vibe.Persistance.Entities.Attendance;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
@@ -163,6 +164,15 @@ public class ActivityServiceImplementation implements ActivityService{
             }
         }
         for(Activity activity : temp) this.delete(activity);
+    }
+
+    @Override
+    public Activity updateAttendance(User user, Attendance attendance, Event event) {
+        Activity activity = base(event.getGroup(), user);
+        activity.setDescriptionString("is " + attendance.toString() + " to: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
     }
 
     @Override

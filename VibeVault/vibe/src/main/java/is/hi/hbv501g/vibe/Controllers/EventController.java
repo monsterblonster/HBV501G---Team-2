@@ -119,6 +119,7 @@ public class EventController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
 
         event.getParticipantStatus().put(user, attendance); // what is put doing here
+        activityService.updateAttendance(user, attendance, event);
         eventService.save(event);
 
         // Update attendance status

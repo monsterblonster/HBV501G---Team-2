@@ -5,6 +5,7 @@ import java.util.Optional;
 
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
+import is.hi.hbv501g.vibe.Persistance.Entities.Attendance;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
@@ -31,6 +32,7 @@ public interface ActivityService {
     Activity removeTag(Group group, String tag, User user);
     Activity holdEvent(Event event);
     Activity cancelEvent(Event event);
+    Activity updateAttendance(User user, Attendance attendance, Event event);
     void deleteEvent(Event event);
     List<Activity> reversedByGroup(Group group);
 }
