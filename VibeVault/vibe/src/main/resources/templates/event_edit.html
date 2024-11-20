@@ -14,6 +14,7 @@
       href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
     />
   </head>
+
   <body class="container mt-5">
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
       <div class="container">
@@ -26,6 +27,7 @@
         </div>
       </div>
     </nav>
+
     <!-- Page Heading -->
     <h2
       class="text-center text-primary mb-4"
@@ -107,7 +109,7 @@
           id="datetime"
           name="datetime"
           class="form-control"
-          th:value="${#temporals.format(appointment?.datetime, 'yyyy-MM-dd''T''HH:mm:ss')}"
+          th:value="${#temporals.format(event?.date, 'yyyy-MM-dd''T''HH:mm:ss')}"
           required
         />
       </div>

@@ -194,28 +194,22 @@ public class EventController {
             @ModelAttribute("event") Event event,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime) {
                 User creator = userService.findUserByUsername(username).orElse(null);
-								
-								
-                Group group = event.getGroup();
-                event.setGroup(group);
-                event.setCreator(creator);
-                event.setDate(datetime);
-                event.getParticipants().add(creator);
-								List<Comment> comments = commentService.findByEventId(event.getId());
-								event.setComments(comments);
+				Event edited = eventService.findById(event.getId()).orElse(null);
+                edited.setName(event.getName());
+                edited.setDescription(event.getDescription());
+                edited.setDate(datetime);
+                edited.setStatus(event.getStatus());
 
                 if (eventPhoto != null && !eventPhoto.isEmpty()) {
                     String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
                     String photoPath = fileStorageService.storeFile(eventPhoto, filename, "event");
-                    event.setPhotoPath("/images/events/" + filename);
+                    edited.setPhotoPath("/images/events/" + filename);
                 }
                 
-                eventService.updateEvent(event);
+                eventService.editEvent(edited);
+                activityService.editEvent(edited.getGroup(), event, creator);
 
-                //activityService.createEvent(group, event, creator);
-								System.out.println("Redirecting to: /events/" + event.getId() + "/details?username=" + username);
-
-                return "redirect:/events/" + event.getId() + "/details?username=" + username;
+                return "redirect:/events/" + edited.getId() + "/details?username=" + username;
             }
 	}
 

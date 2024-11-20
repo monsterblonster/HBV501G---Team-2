@@ -72,6 +72,15 @@ public class ActivityServiceImplementation implements ActivityService{
     }
 
     @Override
+    public Activity editEvent(Group group, Event event, User creator) {
+        Activity activity = base(group, creator);
+        activity.setDescriptionString("changed their event: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
+    }
+
+    @Override
     public Activity deleteEvent(Group group, Event event, User creator) {
         Activity activity = base(group, creator);
         activity.setDescriptionString("deleted an event: ");

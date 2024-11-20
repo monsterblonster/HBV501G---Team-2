@@ -21,6 +21,7 @@ public interface ActivityService {
     Activity acceptInvite(Group group, User invited);
     Activity declineInvite(Group group, User invited);
     Activity createEvent(Group group, Event event, User creator);
+    Activity editEvent(Group group, Event event, User creator);
     Activity deleteEvent(Group group, Event event, User creator);
     Activity createGroup(Group group, User creator);
     Activity editGroup(Group group, User user);

@@ -30,6 +30,12 @@ public class EventServiceImplementation implements EventService {
     }
 
     @Override
+    public Event editEvent(Event event) {
+        return this.save(event);
+    }
+
+
+    @Override
     public List<Event> findAll() {
         return eventRepository.findAll();
     }
