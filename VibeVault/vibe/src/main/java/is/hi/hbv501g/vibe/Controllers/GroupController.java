@@ -250,9 +250,9 @@ public class GroupController {
 
     // Hægt að endurnefna í showActivityLog og breyta í það
     // eða bara halda þessu sem lista yfir alla eventa í group og hafa activity log sem annað
-    @RequestMapping(value = "/{groupName}/events", method=RequestMethod.GET)
-    public String showGroupEvents(@RequestParam("username") String username, @PathVariable("groupName") String groupName, Model model) {
-        Group group = groupService.findByGroupName(groupName).orElse(null);
+    @RequestMapping(value = "/{id}/pastEvents", method=RequestMethod.GET)
+    public String showGroupEvents(@RequestParam("username") String username, @PathVariable("id") Long groupId, Model model) {
+        Group group = groupService.findById(groupId).orElse(null);
         model.addAttribute("user", userService.findUserByUsername(username).orElse(null));
         if (group != null) {
             model.addAttribute("events", group.getGroupEvents());

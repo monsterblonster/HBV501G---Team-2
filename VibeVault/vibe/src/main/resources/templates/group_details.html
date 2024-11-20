@@ -65,11 +65,18 @@
                   class="d-flex justify-content-between align-items-center mb-3"
                 >
                   <h3 class="h4 mb-0">Events</h3>
-                  <a
-                    th:href="@{'/events/create' + '?username=' + ${user.userName} + '&groupname=' + ${group.groupName}}"
-                    class="btn btn-primary btn-sm"
-                    >Create New Event</a
-                  >
+                  <div  class="d-inline-flex gap-2">
+                    <a
+                      th:href="@{'/groups/' + ${group.id} + '/pastEvents?username=' + ${user.userName}}"
+                      class="btn btn-primary btn-sm"
+                      >Past events</a
+                    >
+                    <a
+                      th:href="@{'/events/create' + '?username=' + ${user.userName} + '&groupname=' + ${group.groupName}}"
+                      class="btn btn-primary btn-sm"
+                      >Create New Event</a
+                    >
+                  </div>
                 </div>
 
                 <div th:if="${!#lists.isEmpty(group.groupEvents)}">
