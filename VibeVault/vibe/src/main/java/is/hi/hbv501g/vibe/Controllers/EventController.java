@@ -1,6 +1,7 @@
 package is.hi.hbv501g.vibe.Controllers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,10 @@ import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.Attendance;
 import is.hi.hbv501g.vibe.Services.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 @RequestMapping("/events")
@@ -90,6 +95,17 @@ public class EventController {
         return "event";
     }
 
+    @RequestMapping(value = "/{id}/cancel", method=RequestMethod.GET)
+    public String cancelEvent(@PathVariable("id") Long eventId, @RequestParam("username") String username) {
+        Event event = eventService.findById(eventId)
+            .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        event.setStatus("Canceled");
+        eventService.editEvent(event);
+        activityService.cancelEvent(event);
+        return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
+    }
+    
+
     @RequestMapping(value = "/{id}/attendance", method = RequestMethod.POST)
     public String updateAttendance(
             @PathVariable("id") Long eventId,
@@ -103,6 +119,7 @@ public class EventController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
 
         event.getParticipantStatus().put(user, attendance); // what is put doing here
+        activityService.updateAttendance(user, attendance, event);
         eventService.save(event);
 
         // Update attendance status
@@ -163,9 +180,52 @@ public class EventController {
         }
 
         // Log the deletion in the activity log
-        activityService.deleteEvent(event.getGroup(), event, user);
+        activityService.deleteEvent(event);
 
         eventService.delete(event);
         return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
     }
-}
+
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
+    public String showEditEventForm(@PathVariable("id") Long eventId, Model model, @RequestParam("username") String username) {
+        Event event = eventService.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        User user = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+
+        if (!event.getCreator().equals(user)) {
+            model.addAttribute("error", "Only the userCreator can edit the event.");
+            return "error_page";
+        }
+
+        model.addAttribute("event", event);
+        model.addAttribute("user", user);
+        return "event_edit";
+    }
+
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
+    public String editGroup(
+            @RequestParam("username") String username,
+            @RequestParam("eventPhoto") MultipartFile eventPhoto,
+            @ModelAttribute("event") Event event,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime) {
+                User creator = userService.findUserByUsername(username).orElse(null);
+				Event edited = eventService.findById(event.getId()).orElse(null);
+                edited.setName(event.getName());
+                edited.setDescription(event.getDescription());
+                edited.setDate(datetime);
+                edited.setStatus(event.getStatus());
+
+                if (eventPhoto != null && !eventPhoto.isEmpty()) {
+                    String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
+                    String photoPath = fileStorageService.storeFile(eventPhoto, filename, "event");
+                    edited.setPhotoPath("/images/events/" + filename);
+                }
+                
+                eventService.editEvent(edited);
+                activityService.editEvent(edited.getGroup(), event, creator);
+
+                return "redirect:/events/" + edited.getId() + "/details?username=" + username;
+            }
+	}
+

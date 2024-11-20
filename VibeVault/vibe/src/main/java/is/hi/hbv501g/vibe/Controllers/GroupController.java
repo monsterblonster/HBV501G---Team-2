@@ -1,5 +1,6 @@
 package is.hi.hbv501g.vibe.Controllers;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,12 +106,14 @@ public class GroupController {
     @RequestMapping(value = "/{id}/add-tag", method = RequestMethod.POST)
     public String addTagToGroup(@PathVariable("id") Long groupId, @RequestParam("tag") String tagName, @RequestParam("username") String username) {
         groupService.addTagToGroup(groupId, tagName);
+        activityService.addTag(groupService.findById(groupId).orElse(null), tagName, userService.findUserByUsername(username).orElse(null));
         return "redirect:/groups/" + groupId + "/details?username=" + username;
     }
 
     @RequestMapping(value = "/{id}/remove-tag", method = RequestMethod.POST)
     public String removeTagFromGroup(@PathVariable("id") Long groupId, @RequestParam("tag") String tagName, @RequestParam("username") String username) {
         groupService.removeTagFromGroup(groupId, tagName);
+        activityService.removeTag(groupService.findById(groupId).orElse(null), tagName, userService.findUserByUsername(username).orElse(null));
         return "redirect:/groups/" + groupId + "/details?username=" + username;
     }
 
@@ -121,7 +124,15 @@ public class GroupController {
         User user = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
         model.addAttribute("user", user);
+        groupService.refreshEvents(group);
         model.addAttribute("group", group);
+        List<Event> events = new ArrayList<>();
+        for (Event event : group.getGroupEvents()) {
+            if (event.getStatus().equalsIgnoreCase("Upcoming")) {
+                events.add(event);
+            }
+        }
+        model.addAttribute("events", events);
         List<Activity> activities = activityService.findByGroupAndPage(group, 0, 10);
         model.addAttribute("activities", activities);
         model.addAttribute("currentMemberCount", group.getCurrentMemberCount());
@@ -248,12 +259,18 @@ public class GroupController {
 
     // Hægt að endurnefna í showActivityLog og breyta í það
     // eða bara halda þessu sem lista yfir alla eventa í group og hafa activity log sem annað
-    @RequestMapping(value = "/{groupName}/events", method=RequestMethod.GET)
-    public String showGroupEvents(@RequestParam("username") String username, @PathVariable("groupName") String groupName, Model model) {
-        Group group = groupService.findByGroupName(groupName).orElse(null);
+    @RequestMapping(value = "/{id}/pastEvents", method=RequestMethod.GET)
+    public String showGroupEvents(@RequestParam("username") String username, @PathVariable("id") Long groupId, Model model) {
+        Group group = groupService.findById(groupId).orElse(null);
         model.addAttribute("user", userService.findUserByUsername(username).orElse(null));
         if (group != null) {
-            model.addAttribute("events", group.getGroupEvents());
+            List<Event> pastEvents = new ArrayList<>();
+            for (Event event : group.getGroupEvents()) {
+                if (!event.getStatus().equalsIgnoreCase("Upcoming")) {
+                    pastEvents.add(event);
+                }
+            }
+            model.addAttribute("events", pastEvents);
         } else model.addAttribute("error", "Group not found.");
         model.addAttribute("group", group);
         return "group_events";

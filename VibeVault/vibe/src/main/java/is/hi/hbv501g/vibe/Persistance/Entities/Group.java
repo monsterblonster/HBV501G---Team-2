@@ -30,7 +30,7 @@ public class Group {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-		@OrderBy
+	@OrderBy
     private final List<User> members = new ArrayList<>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -40,12 +40,12 @@ public class Group {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
 
-		@OrderBy
+	@OrderBy
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-		@OrderBy("date")
-		private List<Event> groupEvents = new ArrayList<>();
+	@OrderBy("date")
+	private List<Event> groupEvents = new ArrayList<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Activity> groupActivities = new HashSet<>();
@@ -116,6 +116,7 @@ public class Group {
     }
 
     public Set<Tag> getTags() { return tags; }
+    
     public void setTags(Set<Tag> tags) { this.tags = tags; }
 
     public void addTag(Tag tag) {
@@ -147,6 +148,5 @@ public class Group {
     public String getProfilePicturePath() { return profilePicturePath; }
 
     public void setProfilePicturePath(String profilePicturePath) { this.profilePicturePath = profilePicturePath; }
-
 }
 

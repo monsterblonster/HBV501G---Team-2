@@ -63,40 +63,39 @@
                         ></span>
                       </td>
                       <td>
-                        <div class="btn-group btn-group-sm">
-                          <a
-                            th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}"
-                            class="btn btn-info"
-                            >Details</a
-                          >
-                          <a
-                            th:href="@{'/groups/' + ${group.groupName} + '/events?username=' + ${user.userName}}"
-                            class="btn btn-primary"
-                            >Events</a
-                          >
-                          <form
-                            th:action="@{/profile/remove-group}"
-                            method="post"
-                            class="d-inline"
-                          >
-                            <input
-                              type="hidden"
-                              name="username"
-                              th:value="${user.userName}"
-                            />
-                            <input
-                              type="hidden"
-                              name="groupId"
-                              th:value="${group.id}"
-                            />
-                            <button
-                              type="submit"
-                              class="btn btn-danger"
-                              onclick="return confirm('Are you sure you want to leave this group?');"
+                        <div class="d-inline-flex gap-2">
+                          <div>
+                            <a
+                              th:href="@{'/groups/' + ${group.id} + '/details?username=' + ${user.userName}}"
+                              class="btn btn-sm btn-info"
+                              >Details</a
                             >
-                              Leave
-                            </button>
-                          </form>
+                          </div>
+                          <div>
+                            <form
+                              th:action="@{/profile/remove-group}"
+                              method="post"
+                              class="d-inline"
+                            >
+                              <input
+                                type="hidden"
+                                name="username"
+                                th:value="${user.userName}"
+                              />
+                              <input
+                                type="hidden"
+                                name="groupId"
+                                th:value="${group.id}"
+                              />
+                              <button
+                                type="submit"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure you want to leave this group?');"
+                              >
+                                Leave
+                              </button>
+                            </form>
+                          </div>
                         </div>
                       </td>
                     </tr>

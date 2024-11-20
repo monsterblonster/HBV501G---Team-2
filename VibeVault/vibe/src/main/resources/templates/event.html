@@ -79,12 +79,14 @@
             class="mb-3 border-bottom pb-2"
           >
             <p>
+              <span
+              th:text="${(comment?.getDate() != null ? #temporals.format(comment.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available')}"></span>
               <strong
                 th:text="${comment.author != null ? comment.author.userName : 'Anonymous'}"
                 >Author</strong
               >:
               <span
-                th:text="${(event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available') + ' ' + comment.commentData}"
+                th:text="${comment.commentData}"
               ></span>
             </p>
           </div>
@@ -121,32 +123,33 @@
               class="img-fluid rounded"
             />
           </div>
-
-          <!-- Attendance Form -->
-          <div class="container mt-4">
-            <form
-              th:action="@{'/events/' + ${event.id} + '/attendance?username=' + ${user.userName}}"
-              method="post"
-              class="p-4 border rounded bg-light"
-            >
-              <div class="mb-3">
-                <label for="attendance" class="form-label fw-bold"
-                  >Attendance:</label
-                >
-                <select name="attendance" id="attendance" class="form-select">
-                  <option value="GOING" class="text-success">Going</option>
-                  <option value="MAYBE_GOING" class="text-warning">
-                    Maybe Going
-                  </option>
-                  <option value="NOT_GOING" class="text-danger">
-                    Not Going
-                  </option>
-                </select>
-              </div>
-              <input type="hidden" name="eventId" value="${event.id}" />
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-
+          <div
+          th:if="${event.status == 'Upcoming'}">
+            <!-- Attendance Form -->
+            <div class="container mt-4">
+              <form
+                th:action="@{'/events/' + ${event.id} + '/attendance?username=' + ${user.userName}}"
+                method="post"
+                class="p-4 border rounded bg-light"
+              >
+                <div class="mb-3">
+                  <label for="attendance" class="form-label fw-bold"
+                    >Attendance:</label
+                  >
+                  <select name="attendance" id="attendance" class="form-select">
+                    <option value="GOING" class="text-success">Going</option>
+                    <option value="MAYBE_GOING" class="text-warning">
+                      Maybe Going
+                    </option>
+                    <option value="NOT_GOING" class="text-danger">
+                      Not Going
+                    </option>
+                  </select>
+                </div>
+                <input type="hidden" name="eventId" value="${event.id}" />
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
             <p class="mt-3">
               <span class="fw-bold">Current Attendance Status:</span>
               <span
@@ -157,18 +160,12 @@
                       ' bg-danger')}"
               ></span>
             </p>
-
-            <!-- Delete Event Form -->
-            <div class="text-end mt-3">
-              <form
-                th:action="@{'/events/' + ${event.id} + '/delete'}"
-                method="post"
-              >
-                <input
-                  type="hidden"
-                  name="username"
-                  th:value="${user.userName}"
-                />
+          </div>
+            <!-- Event Delete and edit buttons -->
+            <div th:if="${event.creator.userName == user.userName}" class="mt-4 d-flex align-items-center gap-2">
+              <!-- Delete Event Button -->
+              <form th:action="@{'/events/' + ${event.id} + '/delete'}" method="post" class="mb-0">
+                <input type="hidden" name="username" th:value="${user.userName}" />
                 <button
                   type="submit"
                   class="btn btn-danger"
@@ -177,6 +174,22 @@
                   Delete Event
                 </button>
               </form>
+              <!-- Cancel Event Button-->
+              <a
+              th:if="${event.status == 'Upcoming'}"
+              th:href="@{'/events/' + ${event.id} + '/cancel?username=' + ${user.userName}}"
+              class="btn btn-warning"
+              >
+                Cancel event
+              </a>
+              <!-- Edit Event Button -->
+              <a
+              th:if="${event.status == 'Upcoming'}"
+                th:href="@{'/events/' + ${event.id} + '/edit?username=' + ${user.userName}}"
+                class="btn btn-info"
+              >
+                Edit Event
+              </a>
             </div>
           </div>
         </div>

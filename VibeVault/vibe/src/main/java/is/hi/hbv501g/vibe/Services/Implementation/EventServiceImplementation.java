@@ -30,6 +30,12 @@ public class EventServiceImplementation implements EventService {
     }
 
     @Override
+    public Event editEvent(Event event) {
+        return this.save(event);
+    }
+
+
+    @Override
     public List<Event> findAll() {
         return eventRepository.findAll();
     }
@@ -47,5 +53,10 @@ public class EventServiceImplementation implements EventService {
     @Override
     public Optional<Event> findById(Long id) {
         return eventRepository.findById(id);
+    }
+		
+		@Override
+    public void updateEvent(Event event) {
+        eventRepository.save(event);
     }
 }

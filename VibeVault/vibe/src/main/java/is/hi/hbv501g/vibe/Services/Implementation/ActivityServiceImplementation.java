@@ -1,17 +1,18 @@
 package is.hi.hbv501g.vibe.Services.Implementation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
+import is.hi.hbv501g.vibe.Persistance.Entities.Attendance;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
@@ -72,12 +73,11 @@ public class ActivityServiceImplementation implements ActivityService{
     }
 
     @Override
-    public Activity deleteEvent(Group group, Event event, User creator) {
+    public Activity editEvent(Group group, Event event, User creator) {
         Activity activity = base(group, creator);
-        activity.setDescriptionString("deleted an event: ");
+        activity.setDescriptionString("changed their event: ");
         activity.setTypeString(event.getName());
-        activity.setLinkString("");
-        activity.setExtraString("The event has been removed.");
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
         return this.save(activity);
     }
 
@@ -115,6 +115,61 @@ public class ActivityServiceImplementation implements ActivityService{
     public Activity joinEvent(Group group, Event event, User user) {
         Activity activity = base(group, user);
         activity.setDescriptionString("is attending ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
+    }
+
+    @Override
+    public Activity addTag(Group group, String tag, User user) {
+        Activity activity = base(group, user);
+        activity.setDescriptionString("added the tag: " + tag);
+        return this.save(activity);
+    }
+
+    @Override
+    public Activity removeTag(Group group, String tag, User user) {
+        Activity activity = base(group, user);
+        activity.setDescriptionString("removed the tag: " + tag);
+        return this.save(activity);
+    }
+
+    @Override
+    public Activity holdEvent(Event event) {
+        Activity activity = new Activity();
+        activity.setUser(event.getCreator());
+        activity.setGroup(event.getGroup());
+        activity.setPostTime(event.getDate());
+        activity.setDescriptionString("held the event: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
+    }
+
+    @Override
+    public Activity cancelEvent(Event event) {
+        Activity activity = base(event.getGroup(), event.getCreator());
+        activity.setDescriptionString("canceled the event: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
+    }
+
+    @Override
+    public void deleteEvent(Event event) {
+        List<Activity> temp = new ArrayList<>();
+        for(Activity activity : this.reversedByGroup(event.getGroup())) {
+            if (activity.getLinkString() != null) {
+                if (activity.getLinkString().equalsIgnoreCase("/events/" + event.getId().toString() + "/details?username=")) temp.add(activity);
+            }
+        }
+        for(Activity activity : temp) this.delete(activity);
+    }
+
+    @Override
+    public Activity updateAttendance(User user, Attendance attendance, Event event) {
+        Activity activity = base(event.getGroup(), user);
+        activity.setDescriptionString("is " + attendance.toString() + " to: ");
         activity.setTypeString(event.getName());
         activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
         return this.save(activity);
