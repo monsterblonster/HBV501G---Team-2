@@ -68,7 +68,10 @@
       </div>
 
       <div>
-        <form action="/event/attendance" method="post">
+				<form th:action="@{'/events/' + ${event.id} + '/attendance?username=' + ${user.userName}}" 
+									method="post"
+									class="mt-4"
+				>
           <label for="attendance">Attendance:</label>
           <select name="attendance" id="attendance">
               <option value="GOING">Going</option>

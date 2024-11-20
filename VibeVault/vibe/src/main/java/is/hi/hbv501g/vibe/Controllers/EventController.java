@@ -74,15 +74,15 @@ public class EventController {
     }
 
     @RequestMapping(value = "/{id}/details", method = RequestMethod.GET)
-    public String eventPage(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model) {
-
-        boolean isParticipant = event.getParticipants().contains(user);
-        model.addAttribute("isParticipant", isParticipant);
-                Event event = eventService.findById(eventId)
+    public String eventPage(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model
+	) {
+		        Event event = eventService.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
         User user = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
 
+        boolean isParticipant = event.getParticipants().contains(user);
+        model.addAttribute("isParticipant", isParticipant);
         model.addAttribute("event", event);
         model.addAttribute("user", user);
         model.addAttribute("comment", new Comment());
@@ -92,10 +92,7 @@ public class EventController {
 
     @RequestMapping(value = "/{id}/attendance", method = RequestMethod.POST)
     public String updateAttendance(
-
-        event.getParticipantStatus().put(user, attendanceStatus);
-        eventService.save(event);
-                    @PathVariable("id") Long eventId,
+            @PathVariable("id") Long eventId,
             @RequestParam("username") String username,
             @RequestParam("attendance") Attendance attendance) {
 
@@ -104,6 +101,9 @@ public class EventController {
 
         User user = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+
+        event.getParticipantStatus().put(user, attendance); // what is put doing here
+        eventService.save(event);
 
         // Update attendance status
         event.setAttendance(attendance);
