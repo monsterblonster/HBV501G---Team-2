@@ -127,6 +127,8 @@ public class EventController {
         event.getParticipants().add(user);
         eventService.save(event);
         activityService.joinEvent(event.getGroup(), event, user);
+				Attendance defaultAttendanceStatus = Attendance.MAYBE_GOING;
+        event.getParticipantStatus().put(user, defaultAttendanceStatus);
 
         return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
     }
