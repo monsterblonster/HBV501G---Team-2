@@ -51,12 +51,35 @@
 
       <!-- Event Photo Display -->
       <div th:if="${event.photoPath}" class="mb-4">
-        <h4>Event Photo</h4>
+
+        <div th:if="${!isParticipant}">
+            <p>You must join this event to see attendance details.</p>
+            <form action="/events/${event.id}/join" method="post">
+                <input type="hidden" name="username" value="${user.username}" />
+                <button type="submit">Join Event</button>
+            </form>
+        </div>
+                <h4>Event Photo</h4>
         <img
           th:src="@{${event.photoPath}}"
           alt="Event Photo"
           class="img-fluid rounded"
         />
+      </div>
+
+      <div>
+        <form action="/event/attendance" method="post">
+          <label for="attendance">Attendance:</label>
+          <select name="attendance" id="attendance">
+              <option value="GOING">Going</option>
+              <option value="MAYBE_GOING">Maybe Going</option>
+              <option value="NOT_GOING">Not Going</option>
+          </select>
+          <input type="hidden" name="eventId" value="${event.id}" />
+          <button type="submit">Submit</button>
+        </form>
+      
+        <p>Current Attendance Status: <span th:text="${event.attendance}"></span></p>
       </div>
 
       <!-- Participating Users Section -->
@@ -77,7 +100,15 @@
       <!-- Comments Section -->
       <h4 class="mt-4">Comments</h4>
       <div th:if="${event.comments.size() == 0}" class="text-muted mb-3">
-        No comments yet.
+
+        <div th:if="${!isParticipant}">
+            <p>You must join this event to see attendance details.</p>
+            <form action="/events/${event.id}/join" method="post">
+                <input type="hidden" name="username" value="${user.username}" />
+                <button type="submit">Join Event</button>
+            </form>
+        </div>
+                No comments yet.
       </div>
       <div
         th:each="comment : ${event.comments}"
@@ -117,7 +148,15 @@
     </div>
 
     <div th:if="${event.creator.userName == user.userName}" class="mt-4">
-      <form th:action="@{'/events/' + ${event.id} + '/delete'}" method="post">
+
+        <div th:if="${!isParticipant}">
+            <p>You must join this event to see attendance details.</p>
+            <form action="/events/${event.id}/join" method="post">
+                <input type="hidden" name="username" value="${user.username}" />
+                <button type="submit">Join Event</button>
+            </form>
+        </div>
+              <form th:action="@{'/events/' + ${event.id} + '/delete'}" method="post">
         <input type="hidden" name="username" th:value="${user.userName}" />
         <button
           type="submit"
