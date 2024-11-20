@@ -25,6 +25,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.OrderBy;
 
 @Entity
 @Table(name = "events")
@@ -74,6 +75,7 @@ public class Event {
     @MapKeyJoinColumn(name = "user_id")
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
+		@OrderBy
     private Map<User, Attendance> participantStatus = new HashMap<>();
 
     public Map<User, Attendance> getParticipantStatus() {
