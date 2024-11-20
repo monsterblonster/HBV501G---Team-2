@@ -46,13 +46,13 @@ public class Comment {
         this.event = event;
     }
 		
-		public LocalDateTime getDate() {
-			return commentTime;
-		}
-		
-		public void setDate(LocalDateTime date) {
-			this.commentTime = date;
-		}
+	public LocalDateTime getDate() {
+		return commentTime;
+	}
+	
+	public void setDate(LocalDateTime date) {
+		this.commentTime = date;
+	}
 
     public User getAuthor() { return author; }
 

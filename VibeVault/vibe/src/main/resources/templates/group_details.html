@@ -1,420 +1,694 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Group Details</title>
-  <link
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-  />
-  <style>
-    .user-pill {
-      background: #f8f9fa;
-      border-radius: 25px;
-      padding: 8px 15px;
-      margin-bottom: 8px;
-      transition: all 0.3s ease;
-      border: 1px solid #dee2e6;
-    }
-    .user-pill:hover {
-      background: #e9ecef;
-      transform: translateX(5px);
-    }
-    .sticky-sidebar {
-      position: sticky;
-      top: 20px;
-    }
-    .group-profile-image {
-      width: 250px;
-      height: 250px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 3px solid #fff;
-    }
-  </style>
-</head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
-  <div class="container">
-    <div class="navbar-nav">
-      <a
-              class="nav-link"
-              th:href="@{'/profile?username=' + ${user.userName}}"
-      >My Profile</a
-      >
-    </div>
-  </div>
-</nav>
-
-<div class="container py-4">
-  <div class="row">
-    <!-- Main Content Column -->
-    <div class="col-lg-8">
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <h1 class="card-title h2 mb-3" th:text="${group.groupName}">
-            Group Name
-          </h1>
-          <p class="lead mb-4" th:text="${group.description}">
-            Group Description
-          </p>
-
-          <!-- Events Section -->
-          <div class="mb-4">
-            <div
-                    class="d-flex justify-content-between align-items-center mb-3"
-            >
-              <h3 class="h4 mb-0">Events</h3>
-              <a
-                      th:href="@{'/events/create' + '?username=' + ${user.userName} + '&groupname=' + ${group.groupName}}"
-                      class="btn btn-primary btn-sm"
-              >Create New Event</a
-              >
-            </div>
-            <div th:if="${group.groupEvents.size() > 0}">
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
-                  <tr>
-                    <th>Event Name</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr th:each="event : ${group.groupEvents}">
-                    <td th:text="${event.name}">Event Name</td>
-                    <td
-                            th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
-                    ></td>
-                    <td>
-                      <div class="d-inline-flex gap-2">
-                        <div>
-                          <a
-                                  th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}"
-                                  class="btn btn-sm btn-info"
-                          >Details</a
-                          >
-                        </div>
-                        <div th:if="${!event.participants.contains(user)}">
-                          <form
-                                  th:action="@{'/events/' + ${event.id} + '/join'}"
-                                  method="post"
-                                  class="d-inline"
-                          >
-                            <input
-                                    type="hidden"
-                                    name="username"
-                                    th:value="${user.userName}"
-                            />
-                            <button
-                                    type="submit"
-                                    class="btn btn-sm btn-success"
-                            >
-                              Join
-                            </button>
-                          </form>
-                        </div>
-                        <div th:if="${event.creator.userName == user.userName}">
-                          <form
-                                  th:action="@{'/events/' + ${event.id} + '/delete'}"
-                                  method="post"
-                                  class="d-inline"
-                          >
-                            <input
-                                    type="hidden"
-                                    name="username"
-                                    th:value="${user.userName}" />
-                            <button
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Are you sure you want to delete this event?');"
-                                    type="submit">
-                              Delete
-                            </button>
-                          </form>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <p th:if="${group.groupEvents.size() == 0}" class="text-muted">
-              No events yet for this group.
-            </p>
-          </div>
-
-          <!-- Admin Controls -->
-          <div
-                  th:if="${user.userName == group.admin.userName}"
-                  class="mb-4"
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Group Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .user-pill {
+        background: #f8f9fa;
+        border-radius: 25px;
+        padding: 8px 15px;
+        margin-bottom: 8px;
+        transition: all 0.3s ease;
+        border: 1px solid #dee2e6;
+      }
+      .user-pill:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+      }
+      .sticky-sidebar {
+        position: sticky;
+        top: 20px;
+      }
+      .group-profile-image {
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #fff;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+      <div class="container">
+        <div class="navbar-nav">
+          <a
+            class="nav-link"
+            th:href="@{'/profile?username=' + ${user.userName}}"
+            >My Profile</a
           >
-            <div class="d-flex gap-2">
-              <a
-                      th:href="@{'/groups/' + ${group.id} + '/edit?username=' + ${user.userName}}"
-                      class="btn btn-warning"
-              >Edit Group</a
-              >
-              <form
-                      th:action="@{'/groups/' + ${group.id} + '/delete'}"
-                      method="post"
-              >
-                <input
-                        type="hidden"
-                        name="username"
-                        th:value="${user.userName}"
-                />
-                <button
-                        type="submit"
-                        class="btn btn-danger"
-                        onclick="return confirm('Are you sure you want to delete this group?');"
-                >
-                  Delete Group
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <!-- Activity Log -->
-          <div>
-            <h3 class="h4">Activity Log</h3>
-            <div
-                    th:if="${group.groupActivities.size() > 0}"
-                    class="table-responsive"
-            >
-              <table class="table table-sm">
-                <tbody>
-                <tr th:each="activity : ${activities}">
-                  <td
-                          class="text-muted"
-                          style="width: 170px"
-                          th:text="${activity?.getPostTime() != null ? #temporals.format(activity.getPostTime(), 'yyyy-MM-dd HH:mm:ss') : 'No Date Available'}"
-                  ></td>
-                  <td>
-                          <span
-                                  class="fw-bold"
-                                  th:text="${activity.user.userName}"
-                          ></span>
-                    <span th:text="${activity.descriptionString}"></span>
-                    <a
-                            th:href="${activity.linkString} + ${user.userName}"
-                            th:text="${activity.typeString}"
-                    ></a>
-                    <span th:text="${activity.extraString}"></span>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <a
-                      th:href="@{'/groups/' + ${group.id} + '/activity?username=' + ${user.userName} + '&page=0'}"
-                      class="btn btn-sm btn-info"
-              >View all activity</a
-              >
-            </div>
-            <p
-                    th:if="${group.groupActivities.size() == 0}"
-                    class="text-muted"
-            >
-              No activity in the group yet...
-            </p>
-          </div>
         </div>
       </div>
-    </div>
+    </nav>
 
-    <!-- Sidebar Column -->
-    <div class="col-lg-4">
-      <div class="sticky-sidebar">
-        <!-- Group Profile Picture Section -->
-        <div class="card shadow-sm mb-4">
-          <div class="card-body text-center">
-            <h3 class="h4 mb-3">Group Picture</h3>
-            <img
-                    th:if="${group.profilePicturePath}"
-                    th:src="@{${group.profilePicturePath}}"
-                    alt="Group Picture"
-                    class="group-profile-image mb-3"
-            />
-            <p class="text-muted" th:if="${group.profilePicturePath == null}">
-              No profile picture available.
-            </p>
-          </div>
-        </div>
-        <!-- Members Section -->
-        <div class="card shadow-sm mb-4">
-          <div class="card-body">
-            <h3 class="h4 mb-3">Members</h3>
-            <p class="text-muted">
-              Members: <span th:text="${currentMemberCount}"></span> /
-              <span th:text="${maxMembers}"></span>
-            </p>
-
-            <div class="mb-3">
-              <div
-                      th:each="member : ${group.members}"
-                      class="user-pill d-flex justify-content-between align-items-center"
-              >
-                <!-- Profile Picture Inline with Name -->
-                <div class="d-flex align-items-center gap-2">
-                  <img
-                          th:if="${member.profilePicturePath != null}"
-                          th:src="@{${member.profilePicturePath}}"
-                          alt="Profile Picture"
-                          class="rounded-circle"
-                          style="width: 30px; height: 30px; object-fit: cover;"
-                  />
-                  <!-- Default profile picture -->
-                  <img
-                          th:if="${member.profilePicturePath == null}"
-                          src="/images/default-profile.jpg"
-                          alt="Default Profile Picture"
-                          class="rounded-circle"
-                          style="width: 30px; height: 30px; object-fit: cover;"
-                  />
-                  <span th:text="${member.userName}" class="text-truncate"></span>
-                </div>
+    <div class="container py-4">
+      <div class="row">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <h1 class="card-title h2 mb-3" th:text="${group.groupName}">
+                Group Name
+              </h1>
+              <p class="lead mb-4" th:text="${group.description}">
+                Group Description
+              </p>
+              <!-- Events Section -->
+              <div class="mb-4">
                 <div
-                        th:if="${user.userName == group.admin.userName && member.userName != group.admin.userName}"
+                  class="d-flex justify-content-between align-items-center mb-3"
                 >
+                  <h3 class="h4 mb-0">Events</h3>
+                  <a
+                    th:href="@{'/events/create' + '?username=' + ${user.userName} + '&groupname=' + ${group.groupName}}"
+                    class="btn btn-primary btn-sm"
+                    >Create New Event</a
+                  >
+                </div>
+
+                <div th:if="${!#lists.isEmpty(group.groupEvents)}">
+                  <!-- Today's Events -->
+                  <div class="mb-4">
+                    <h5 class="border-bottom pb-2">Today</h5>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            th:each="event : ${group.groupEvents}"
+                            th:if="${#temporals.format(event.getDate(), 'yyyy-MM-dd') == #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                          >
+                            <td th:text="${event.name}">Event Name</td>
+                            <td
+                              th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+                            ></td>
+                            <td>
+                              <div class="d-inline-flex gap-2">
+                                <div>
+                                  <a
+                                    th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}"
+                                    class="btn btn-sm btn-info"
+                                    >Details</a
+                                  >
+                                </div>
+                                <div
+                                  th:if="${!event.participants.contains(user)}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/join'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      type="submit"
+                                      class="btn btn-sm btn-success"
+                                    >
+                                      Join
+                                    </button>
+                                  </form>
+                                </div>
+                                <div
+                                  th:if="${event.creator.userName == user.userName}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/delete'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      class="btn btn-sm btn-danger"
+                                      onclick="return confirm('Are you sure you want to delete this event?');"
+                                      type="submit"
+                                    >
+                                      Delete
+                                    </button>
+                                  </form>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- This Week's Events -->
+                  <div class="mb-4">
+                    <h5 class="border-bottom pb-2">This Week</h5>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            th:each="event : ${group.groupEvents}"
+                            th:if="${#temporals.format(event.getDate(), 'w') == #temporals.format(#temporals.createNow(), 'w') and 
+                       #temporals.format(event.getDate(), 'yyyy-MM-dd') != #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                          >
+                            <!-- Same td content as above -->
+                            <td th:text="${event.name}">Event Name</td>
+                            <td
+                              th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+                            ></td>
+                            <td>
+                              <div class="d-inline-flex gap-2">
+                                <div>
+                                  <a
+                                    th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}"
+                                    class="btn btn-sm btn-info"
+                                    >Details</a
+                                  >
+                                </div>
+                                <div
+                                  th:if="${!event.participants.contains(user)}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/join'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      type="submit"
+                                      class="btn btn-sm btn-success"
+                                    >
+                                      Join
+                                    </button>
+                                  </form>
+                                </div>
+                                <div
+                                  th:if="${event.creator.userName == user.userName}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/delete'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      class="btn btn-sm btn-danger"
+                                      onclick="return confirm('Are you sure you want to delete this event?');"
+                                      type="submit"
+                                    >
+                                      Delete
+                                    </button>
+                                  </form>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- This Month's Events -->
+                  <div class="mb-4">
+                    <h5 class="border-bottom pb-2">This Month</h5>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            th:each="event : ${group.groupEvents}"
+                            th:if="${#temporals.format(event.getDate(), 'yyyy-MM') == #temporals.format(#temporals.createNow(), 'yyyy-MM') and 
+                       #temporals.format(event.getDate(), 'w') != #temporals.format(#temporals.createNow(), 'w')}"
+                          >
+                            <!-- Same td content as above -->
+                            <td th:text="${event.name}">Event Name</td>
+                            <td
+                              th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+                            ></td>
+                            <td>
+                              <div class="d-inline-flex gap-2">
+                                <div>
+                                  <a
+                                    th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}"
+                                    class="btn btn-sm btn-info"
+                                    >Details</a
+                                  >
+                                </div>
+                                <div
+                                  th:if="${!event.participants.contains(user)}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/join'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      type="submit"
+                                      class="btn btn-sm btn-success"
+                                    >
+                                      Join
+                                    </button>
+                                  </form>
+                                </div>
+                                <div
+                                  th:if="${event.creator.userName == user.userName}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/delete'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      class="btn btn-sm btn-danger"
+                                      onclick="return confirm('Are you sure you want to delete this event?');"
+                                      type="submit"
+                                    >
+                                      Delete
+                                    </button>
+                                  </form>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- Future Events -->
+                  <div class="mb-4">
+                    <h5 class="border-bottom pb-2">Future Events</h5>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            th:each="event : ${group.groupEvents}"
+                            th:if="${#temporals.format(event.getDate(), 'yyyy-MM') > #temporals.format(#temporals.createNow(), 'yyyy-MM')}"
+                          >
+                            <!-- Same td content as above -->
+                            <td th:text="${event.name}">Event Name</td>
+                            <td
+                              th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+                            ></td>
+                            <td>
+                              <div class="d-inline-flex gap-2">
+                                <div>
+                                  <a
+                                    th:href="@{'/events/' + ${event.id} + '/details?username=' + ${user.userName}}"
+                                    class="btn btn-sm btn-info"
+                                    >Details</a
+                                  >
+                                </div>
+                                <div
+                                  th:if="${!event.participants.contains(user)}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/join'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      type="submit"
+                                      class="btn btn-sm btn-success"
+                                    >
+                                      Join
+                                    </button>
+                                  </form>
+                                </div>
+                                <div
+                                  th:if="${event.creator.userName == user.userName}"
+                                >
+                                  <form
+                                    th:action="@{'/events/' + ${event.id} + '/delete'}"
+                                    method="post"
+                                    class="d-inline"
+                                  >
+                                    <input
+                                      type="hidden"
+                                      name="username"
+                                      th:value="${user.userName}"
+                                    />
+                                    <button
+                                      class="btn btn-sm btn-danger"
+                                      onclick="return confirm('Are you sure you want to delete this event?');"
+                                      type="submit"
+                                    >
+                                      Delete
+                                    </button>
+                                  </form>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <p
+                  th:if="${#lists.isEmpty(group.groupEvents)}"
+                  class="text-muted"
+                >
+                  No events yet for this group.
+                </p>
+              </div>
+              <!-- Admin Controls -->
+              <div
+                th:if="${user.userName == group.admin.userName}"
+                class="mb-4"
+              >
+                <div class="d-flex gap-2">
+                  <a
+                    th:href="@{'/groups/' + ${group.id} + '/edit?username=' + ${user.userName}}"
+                    class="btn btn-warning"
+                    >Edit Group</a
+                  >
                   <form
-                          th:action="@{'/groups/' + ${group.id} + '/remove-user'}"
-                          method="post"
-                          class="d-inline"
+                    th:action="@{'/groups/' + ${group.id} + '/delete'}"
+                    method="post"
                   >
                     <input
-                            type="hidden"
-                            name="username"
-                            th:value="${member.userName}"
-                    />
-                    <input
-                            type="hidden"
-                            name="currentUser"
-                            th:value="${user.userName}"
+                      type="hidden"
+                      name="username"
+                      th:value="${user.userName}"
                     />
                     <button
-                            type="submit"
-                            class="btn btn-sm btn-outline-danger rounded-pill"
-                            onclick="return confirm('Are you sure you want to remove this user?');"
+                      type="submit"
+                      class="btn btn-danger"
+                      onclick="return confirm('Are you sure you want to delete this group?');"
                     >
-                      <small>Remove</small>
+                      Delete Group
                     </button>
                   </form>
                 </div>
               </div>
-            </div>
 
-            <div th:if="${currentMemberCount < maxMembers}">
-              <form
-                      th:action="@{'/groups/' + ${group.id} + '/invite'}"
-                      method="post"
-              >
-                <div class="input-group">
-                  <label for="inviteUser" class="visually-hidden">Invite User</label>
-                  <input
-                          type="text"
-                          id="inviteUser"
-                          name="username"
-                          class="form-control"
-                          placeholder="Username"
-                          required
-                  />
-                  <input
-                          type="hidden"
-                          name="currentUser"
-                          th:value="${user.userName}"
-                  />
-                  <button type="submit" class="btn btn-success">
-                    Invite
-                  </button>
+              <!-- Activity Log -->
+              <div>
+                <h3 class="h4">Activity Log</h3>
+                <div
+                  th:if="${group.groupActivities.size() > 0}"
+                  class="table-responsive"
+                >
+                  <table class="table table-sm">
+                    <tbody>
+                      <tr th:each="activity : ${activities}">
+                        <td
+                          class="text-muted"
+                          style="width: 170px"
+                          th:text="${activity?.getPostTime() != null ? #temporals.format(activity.getPostTime(), 'yyyy-MM-dd HH:mm:ss') : 'No Date Available'}"
+                        ></td>
+                        <td>
+                          <span
+                            class="fw-bold"
+                            th:text="${activity.user.userName}"
+                          ></span>
+                          <span th:text="${activity.descriptionString}"></span>
+                          <a
+                            th:href="${activity.linkString} + ${user.userName}"
+                            th:text="${activity.typeString}"
+                          ></a>
+                          <span th:text="${activity.extraString}"></span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-              </form>
+                <div>
+                  <a
+                    th:href="@{'/groups/' + ${group.id} + '/activity?username=' + ${user.userName} + '&page=0'}"
+                    class="btn btn-sm btn-info"
+                    >View all activity</a
+                  >
+                </div>
+                <p
+                  th:if="${group.groupActivities.size() == 0}"
+                  class="text-muted"
+                >
+                  No activity in the group yet...
+                </p>
+              </div>
             </div>
-            <p
-                    th:if="${currentMemberCount >= maxMembers}"
-                    class="text-danger mt-2"
-            >
-              This group has reached the maximum number of members.
-            </p>
           </div>
         </div>
 
-        <!-- Tags Section -->
-        <div class="card shadow-sm mb-4">
-          <div class="card-body">
-            <h3 class="h4 mb-3">Tags</h3>
-            <div class="mb-3">
-                  <span
-                          th:each="tag : ${group.tags}"
-                          th:text="${tag.name}"
-                          class="badge bg-secondary me-2 mb-2 rounded-pill"
-                  ></span>
-              <p th:if="${group.tags.size() == 0}" class="text-muted">
-                No tags added yet.
-              </p>
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+          <div class="sticky-sidebar">
+            <!-- Group Profile Picture Section -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body text-center">
+                <h3 class="h4 mb-3">Group Picture</h3>
+                <img
+                  th:if="${group.profilePicturePath}"
+                  th:src="@{${group.profilePicturePath}}"
+                  alt="Group Picture"
+                  class="group-profile-image mb-3"
+                />
+                <p
+                  class="text-muted"
+                  th:if="${group.profilePicturePath == null}"
+                >
+                  No profile picture available.
+                </p>
+              </div>
+            </div>
+            <!-- Members Section -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h3 class="h4 mb-3">Members</h3>
+                <p class="text-muted">
+                  Members: <span th:text="${currentMemberCount}"></span> /
+                  <span th:text="${maxMembers}"></span>
+                </p>
+
+                <div class="mb-3">
+                  <div
+                    th:each="member : ${group.members}"
+                    class="user-pill d-flex justify-content-between align-items-center"
+                  >
+                    <!-- Profile Picture Inline with Name -->
+                    <div class="d-flex align-items-center gap-2">
+                      <img
+                        th:if="${member.profilePicturePath != null}"
+                        th:src="@{${member.profilePicturePath}}"
+                        alt="Profile Picture"
+                        class="rounded-circle"
+                        style="width: 30px; height: 30px; object-fit: cover"
+                      />
+                      <!-- Default profile picture -->
+                      <img
+                        th:if="${member.profilePicturePath == null}"
+                        src="/images/default-profile.jpg"
+                        alt="Default Profile Picture"
+                        class="rounded-circle"
+                        style="width: 30px; height: 30px; object-fit: cover"
+                      />
+                      <span
+                        th:text="${member.userName}"
+                        class="text-truncate"
+                      ></span>
+                    </div>
+                    <div
+                      th:if="${user.userName == group.admin.userName && member.userName != group.admin.userName}"
+                    >
+                      <form
+                        th:action="@{'/groups/' + ${group.id} + '/remove-user'}"
+                        method="post"
+                        class="d-inline"
+                      >
+                        <input
+                          type="hidden"
+                          name="username"
+                          th:value="${member.userName}"
+                        />
+                        <input
+                          type="hidden"
+                          name="currentUser"
+                          th:value="${user.userName}"
+                        />
+                        <button
+                          type="submit"
+                          class="btn btn-sm btn-outline-danger rounded-pill"
+                          onclick="return confirm('Are you sure you want to remove this user?');"
+                        >
+                          <small>Remove</small>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+                <div th:if="${currentMemberCount < maxMembers}">
+                  <form
+                    th:action="@{'/groups/' + ${group.id} + '/invite'}"
+                    method="post"
+                  >
+                    <div class="input-group">
+                      <label for="inviteUser" class="visually-hidden"
+                        >Invite User</label
+                      >
+                      <input
+                        type="text"
+                        id="inviteUser"
+                        name="username"
+                        class="form-control"
+                        placeholder="Username"
+                        required
+                      />
+                      <input
+                        type="hidden"
+                        name="currentUser"
+                        th:value="${user.userName}"
+                      />
+                      <button type="submit" class="btn btn-success">
+                        Invite
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                <p
+                  th:if="${currentMemberCount >= maxMembers}"
+                  class="text-danger mt-2"
+                >
+                  This group has reached the maximum number of members.
+                </p>
+              </div>
             </div>
 
-            <form
-                    th:action="@{'/groups/' + ${group.id} + '/add-tag'}"
-                    method="post"
-                    class="mb-2"
-            >
-              <div class="input-group">
-                <label for="tag" class="visually-hidden">Tag Name</label>
-                <input
-                        type="text"
-                        id="tag"
-                        name="tag"
-                        class="form-control"
-                        placeholder="Enter tag name"
-                        required
-                />
-                <input
-                        type="hidden"
-                        name="username"
-                        th:value="${user.userName}"
-                />
-                <button type="submit" class="btn btn-primary">Add</button>
-              </div>
-            </form>
+            <!-- Tags Section -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h3 class="h4 mb-3">Tags</h3>
+                <div class="mb-3">
+                  <span
+                    th:each="tag : ${group.tags}"
+                    th:text="${tag.name}"
+                    class="badge bg-secondary me-2 mb-2 rounded-pill"
+                  ></span>
+                  <p th:if="${group.tags.size() == 0}" class="text-muted">
+                    No tags added yet.
+                  </p>
+                </div>
 
-            <form
-                    th:if="${group.tags.size() > 0}"
-                    th:action="@{'/groups/' + ${group.id} + '/remove-tag'}"
-                    method="post"
-            >
-              <div class="input-group">
-                <label for="removeTag" class="visually-hidden">Remove Tag</label>
-                <select
-                        id="removeTag"
-                        name="tag"
-                        class="form-select"
-                        required
+                <form
+                  th:action="@{'/groups/' + ${group.id} + '/add-tag'}"
+                  method="post"
+                  class="mb-2"
                 >
-                  <option
-                          th:each="tag : ${group.tags}"
-                          th:value="${tag.name}"
-                          th:text="${tag.name}"
-                  ></option>
-                </select>
-                <input
-                        type="hidden"
-                        name="username"
-                        th:value="${user.userName}"
-                />
-                <button type="submit" class="btn btn-danger">Remove</button>
+                  <div class="input-group">
+                    <label for="tag" class="visually-hidden">Tag Name</label>
+                    <input
+                      type="text"
+                      id="tag"
+                      name="tag"
+                      class="form-control"
+                      placeholder="Enter tag name"
+                      required
+                    />
+                    <input
+                      type="hidden"
+                      name="username"
+                      th:value="${user.userName}"
+                    />
+                    <button type="submit" class="btn btn-primary">Add</button>
+                  </div>
+                </form>
+
+                <form
+                  th:if="${group.tags.size() > 0}"
+                  th:action="@{'/groups/' + ${group.id} + '/remove-tag'}"
+                  method="post"
+                >
+                  <div class="input-group">
+                    <label for="removeTag" class="visually-hidden"
+                      >Remove Tag</label
+                    >
+                    <select
+                      id="removeTag"
+                      name="tag"
+                      class="form-select"
+                      required
+                    >
+                      <option
+                        th:each="tag : ${group.tags}"
+                        th:value="${tag.name}"
+                        th:text="${tag.name}"
+                      ></option>
+                    </select>
+                    <input
+                      type="hidden"
+                      name="username"
+                      th:value="${user.userName}"
+                    />
+                    <button type="submit" class="btn btn-danger">Remove</button>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

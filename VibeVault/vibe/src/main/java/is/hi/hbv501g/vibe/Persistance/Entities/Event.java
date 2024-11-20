@@ -7,6 +7,12 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.MapKeyJoinColumn;
+import java.util.Map;
+import java.util.HashMap;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +23,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
 
 @Entity
 @Table(name = "events")
@@ -47,6 +55,9 @@ public class Event {
     private String status;
     private String photoPath;
 
+    @Enumerated(EnumType.STRING)
+    private Attendance attendance;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
 
@@ -58,6 +69,21 @@ public class Event {
     )
     private List<User> participants = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "participant_status", joinColumns = @JoinColumn(name = "event_id"))
+    @MapKeyJoinColumn(name = "user_id")
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Map<User, Attendance> participantStatus = new HashMap<>();
+
+    public Map<User, Attendance> getParticipantStatus() {
+        return participantStatus;
+    }
+
+    public void setParticipantStatus(Map<User, Attendance> participantStatus) {
+        this.participantStatus = participantStatus;
+    }
+    
     @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
 
@@ -126,6 +152,12 @@ public class Event {
     public void setGroup(Group group) {
         this.group = group;
     }
+    public Attendance getAttendance() {
+        return attendance;
+    }
+    public void setAttendance(Attendance attendance) {
+        this.attendance = attendance;
+    }
     public List<Comment> getComments() {
         return comments;
     }
@@ -133,6 +165,7 @@ public class Event {
         this.comments = comments;
     }
     public String getPhotoPath() { return photoPath; }
+
     public void setPhotoPath(String photoPath) { this.photoPath = photoPath; }
     
 }

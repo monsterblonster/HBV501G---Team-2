@@ -1,27 +1,22 @@
 package is.hi.hbv501g.vibe.Controllers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import is.hi.hbv501g.vibe.Persistance.Entities.Activity;
 import is.hi.hbv501g.vibe.Persistance.Entities.Comment;
 import is.hi.hbv501g.vibe.Persistance.Entities.Event;
-import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.User;
-import is.hi.hbv501g.vibe.Services.EventService;
-import is.hi.hbv501g.vibe.Services.GroupService;
-import is.hi.hbv501g.vibe.Services.UserService;
-import is.hi.hbv501g.vibe.Services.FileStorageService;
-import is.hi.hbv501g.vibe.Services.ActivityService;
-import is.hi.hbv501g.vibe.Services.CommentService;
-import java.util.List;
-
+import is.hi.hbv501g.vibe.Persistance.Entities.Group;
+import is.hi.hbv501g.vibe.Persistance.Entities.Attendance;
+import is.hi.hbv501g.vibe.Services.*;
 
 @Controller
 @RequestMapping("/events")
@@ -31,12 +26,10 @@ public class EventController {
     private final EventService eventService;
     private final FileStorageService fileStorageService;
     private final CommentService commentService;
-    
+
     @Autowired
     private ActivityService activityService;
 
-    // hérn verður bara unnið með staka eventa, þannig búa til event, skoða event, fara í event chat
-    // hver event getur verið með hlekk yfir í group-una sem hann tilheyrir
     @Autowired
     public EventController(UserService userService, GroupService groupService, EventService eventService, FileStorageService fileStorageService, CommentService commentService) {
         this.eventService = eventService;
@@ -45,7 +38,8 @@ public class EventController {
         this.fileStorageService = fileStorageService;
         this.commentService = commentService;
     }
-    @RequestMapping(value = "/create", method=RequestMethod.GET)
+
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String viewCreateGroupForm(@RequestParam("username") String creatorName, @RequestParam("groupname") String groupName, Model model) {
         model.addAttribute("user", userService.findUserByUsername(creatorName).orElse(null));
         model.addAttribute("group", groupService.findByGroupName(groupName).orElse(null));
@@ -53,43 +47,43 @@ public class EventController {
         return "event_create";
     }
 
-    @RequestMapping(value = "/create", method=RequestMethod.POST)
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String createEvent(
             @RequestParam("username") String username,
             @RequestParam("groupname") String groupname,
             @RequestParam("eventPhoto") MultipartFile eventPhoto,
             @ModelAttribute("event") Event event,
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            @RequestParam("datetime") LocalDateTime datetime) {
-                User creator = userService.findUserByUsername(username).orElse(null);
-                Group group = groupService.findByGroupName(groupname).orElse(null);
-                event.setGroup(group);
-                event.setCreator(creator);
-                event.setDate(datetime);
-                event.getParticipants().add(creator);
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam("datetime") LocalDateTime datetime) {
 
-                if (eventPhoto != null && !eventPhoto.isEmpty()) {
-                    String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
-                    String photoPath = fileStorageService.storeFile(eventPhoto, filename, "event");
-                    event.setPhotoPath("/images/events/" + filename);
-                }
-                
-                eventService.save(event);
+        User creator = userService.findUserByUsername(username).orElse(null);
+        Group group = groupService.findByGroupName(groupname).orElse(null);
+        event.setGroup(group);
+        event.setCreator(creator);
+        event.setDate(datetime);
+        event.getParticipants().add(creator);
 
-                activityService.createEvent(group, event, creator);
+        if (eventPhoto != null && !eventPhoto.isEmpty()) {
+            String filename = "event_" + System.currentTimeMillis() + "_" + eventPhoto.getOriginalFilename();
+            String photoPath = fileStorageService.storeFile(eventPhoto, filename, "event");
+            event.setPhotoPath("/images/events/" + filename);
+        }
 
-                return "redirect:/events/" + event.getId() + "/details?username=" + username;
-            }
+        eventService.save(event);
+        activityService.createEvent(group, event, creator);
 
-
+        return "redirect:/events/" + event.getId() + "/details?username=" + username;
+    }
 
     @RequestMapping(value = "/{id}/details", method = RequestMethod.GET)
-    public String eventPage(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model) {
-					  
-        Event event = eventService.findById(eventId)
+    public String eventPage(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model
+	) {
+		        Event event = eventService.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
         User user = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+
+        boolean isParticipant = event.getParticipants().contains(user);
+        model.addAttribute("isParticipant", isParticipant);
         model.addAttribute("event", event);
         model.addAttribute("user", user);
         model.addAttribute("comment", new Comment());
@@ -97,12 +91,34 @@ public class EventController {
         return "event";
     }
 
+    @RequestMapping(value = "/{id}/attendance", method = RequestMethod.POST)
+    public String updateAttendance(
+            @PathVariable("id") Long eventId,
+            @RequestParam("username") String username,
+            @RequestParam("attendance") Attendance attendance) {
+
+        Event event = eventService.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+
+        User user = userService.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+
+        event.getParticipantStatus().put(user, attendance); // what is put doing here
+        eventService.save(event);
+
+        // Update attendance status
+        event.setAttendance(attendance);
+        eventService.save(event);
+
+        return "redirect:/events/" + eventId + "/details?username=" + username;
+    }
+
     @RequestMapping(value = "/{id}/join", method = RequestMethod.POST)
     public String joinEvent(@PathVariable("id") Long eventId, @RequestParam("username") String username, Model model) {
         Event event = eventService.findById(eventId)
-            .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
         User user = userService.findUserByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
 
         if (event.getParticipants().contains(user)) {
             model.addAttribute("error", "You are already a participant of this event.");
@@ -112,15 +128,15 @@ public class EventController {
         event.getParticipants().add(user);
         eventService.save(event);
         activityService.joinEvent(event.getGroup(), event, user);
+				Attendance defaultAttendanceStatus = Attendance.MAYBE_GOING;
+        event.getParticipantStatus().put(user, defaultAttendanceStatus);
 
         return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
     }
 
-
-
     @RequestMapping(value = "/{id}/details/comment", method = RequestMethod.POST)
     public String addComment(@PathVariable("id") Long eventId, @ModelAttribute("comment") Comment comment, @RequestParam("username") String username) {
-		Event event = eventService.findById(eventId)
+        Event event = eventService.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with id: " + eventId));
 
         User author = userService.findUserByUsername(username)
@@ -128,7 +144,7 @@ public class EventController {
 
         comment.setEvent(event);
         comment.setAuthor(author);
-				comment.setDate(LocalDateTime.now());
+        comment.setDate(LocalDateTime.now());
         activityService.eventComment(event.getGroup(), event, author);
         commentService.save(comment); // Save the comment
         return "redirect:/events/" + eventId + "/details?username=" + username;
