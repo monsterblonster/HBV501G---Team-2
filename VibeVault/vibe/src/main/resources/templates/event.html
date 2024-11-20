@@ -10,39 +10,41 @@
   </head>
   <body class="container mt-5">
     <div class="card p-4 shadow">
-      <!-- Event Name -->
-      <h2 class="text-primary" th:text="${event.name}">Event Name</h2>
+      <div class="row">
+        <div class="col-md-8">
+          <!-- Event Name -->
+          <h2 class="text-primary" th:text="${event.name}">Event Name</h2>
 
-      <!-- Back to Group Button -->
-      <div class="mb-3">
-        <a
-          th:href="@{'/groups/' + ${event.group.id} + '/details?username=' + ${user.userName}}"
-          class="btn btn-secondary"
-          >Back to Group</a
-        >
-      </div>
+          <!-- Back to Group Button -->
+          <div class="mb-3">
+            <a
+              th:href="@{'/groups/' + ${event.group.id} + '/details?username=' + ${user.userName}}"
+              class="btn btn-secondary"
+              >Back to Group</a
+            >
+          </div>
 
-      <!-- Event Description -->
-      <p class="mb-4" th:text="${event.description}">Event Description</p>
+          <!-- Event Description -->
+          <p class="mb-4" th:text="${event.description}">Event Description</p>
 
-      <!-- Event Creator -->
-      <p class="mb-2">
-        <strong>Created by:</strong>
-        <span
-          th:text="${event.creator != null ? event.creator.userName : 'Unknown'}"
-          >Username</span
-        >
-      </p>
+          <!-- Event Creator -->
+          <p class="mb-2">
+            <strong>Created by:</strong>
+            <span
+              th:text="${event.creator != null ? event.creator.userName : 'Unknown'}"
+              >Username</span
+            >
+          </p>
 
-      <!-- Event Date -->
-      <p class="mb-4">
-        <strong>Date:</strong>
-        <span
-          th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
-        >
-          Event Date
-        </span>
-      </p>
+          <!-- Event Date -->
+          <p class="mb-4">
+            <strong>Date:</strong>
+            <span
+              th:text="${event?.getDate() != null ? #temporals.format(event.getDate(), 'yyyy-MM-dd HH:mm') : 'No Date Available'}"
+            >
+              Event Date
+            </span>
+          </p>
 
       <!-- Event Photo Display -->
       <div th:if="${event.photoPath}" class="mb-4">
