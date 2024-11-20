@@ -16,5 +16,6 @@ public interface GroupService {
     Group removeTagFromGroup(Long groupId, String tagName);
     void deleteGroup(Long id, User admin);
     void saveGroup(Group group);
+    void refreshEvents(Group group);
     Optional<Group> findById(Long id);
 }

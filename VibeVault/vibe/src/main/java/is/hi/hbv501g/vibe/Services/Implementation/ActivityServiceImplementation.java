@@ -1,6 +1,7 @@
 package is.hi.hbv501g.vibe.Services.Implementation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -80,16 +81,6 @@ public class ActivityServiceImplementation implements ActivityService{
     }
 
     @Override
-    public Activity deleteEvent(Group group, Event event, User creator) {
-        Activity activity = base(group, creator);
-        activity.setDescriptionString("deleted an event: ");
-        activity.setTypeString(event.getName());
-        activity.setLinkString("");
-        activity.setExtraString("The event has been removed.");
-        return this.save(activity);
-    }
-
-    @Override
     public Activity createGroup(Group group, User creator) {
         Activity activity = base(group, creator);
         activity.setDescriptionString("created the group!");
@@ -140,6 +131,38 @@ public class ActivityServiceImplementation implements ActivityService{
         Activity activity = base(group, user);
         activity.setDescriptionString("removed the tag: " + tag);
         return this.save(activity);
+    }
+
+    @Override
+    public Activity holdEvent(Event event) {
+        Activity activity = new Activity();
+        activity.setUser(event.getCreator());
+        activity.setGroup(event.getGroup());
+        activity.setPostTime(event.getDate());
+        activity.setDescriptionString("held the event: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
+    }
+
+    @Override
+    public Activity cancelEvent(Event event) {
+        Activity activity = base(event.getGroup(), event.getCreator());
+        activity.setDescriptionString("canceled the event: ");
+        activity.setTypeString(event.getName());
+        activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
+    }
+
+    @Override
+    public void deleteEvent(Event event) {
+        List<Activity> temp = new ArrayList<>();
+        for(Activity activity : this.reversedByGroup(event.getGroup())) {
+            if (activity.getLinkString() != null) {
+                if (activity.getLinkString().equalsIgnoreCase("/events/" + event.getId().toString() + "/details?username=")) temp.add(activity);
+            }
+        }
+        for(Activity activity : temp) this.delete(activity);
     }
 
     @Override

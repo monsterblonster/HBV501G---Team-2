@@ -99,7 +99,7 @@ public class Event {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public LocalDateTime getTimeCreated() {
         return timeCreated;
     }

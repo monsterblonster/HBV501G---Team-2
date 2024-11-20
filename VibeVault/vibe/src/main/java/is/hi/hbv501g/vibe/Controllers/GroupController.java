@@ -1,5 +1,6 @@
 package is.hi.hbv501g.vibe.Controllers;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -123,7 +124,15 @@ public class GroupController {
         User user = userService.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
         model.addAttribute("user", user);
+        groupService.refreshEvents(group);
         model.addAttribute("group", group);
+        List<Event> events = new ArrayList<>();
+        for (Event event : group.getGroupEvents()) {
+            if (event.getStatus().equalsIgnoreCase("Upcoming")) {
+                events.add(event);
+            }
+        }
+        model.addAttribute("events", events);
         List<Activity> activities = activityService.findByGroupAndPage(group, 0, 10);
         model.addAttribute("activities", activities);
         model.addAttribute("currentMemberCount", group.getCurrentMemberCount());
@@ -255,7 +264,13 @@ public class GroupController {
         Group group = groupService.findById(groupId).orElse(null);
         model.addAttribute("user", userService.findUserByUsername(username).orElse(null));
         if (group != null) {
-            model.addAttribute("events", group.getGroupEvents());
+            List<Event> pastEvents = new ArrayList<>();
+            for (Event event : group.getGroupEvents()) {
+                if (!event.getStatus().equalsIgnoreCase("Upcoming")) {
+                    pastEvents.add(event);
+                }
+            }
+            model.addAttribute("events", pastEvents);
         } else model.addAttribute("error", "Group not found.");
         model.addAttribute("group", group);
         return "group_events";

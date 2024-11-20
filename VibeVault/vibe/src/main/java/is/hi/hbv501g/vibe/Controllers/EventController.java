@@ -17,6 +17,10 @@ import is.hi.hbv501g.vibe.Persistance.Entities.User;
 import is.hi.hbv501g.vibe.Persistance.Entities.Group;
 import is.hi.hbv501g.vibe.Persistance.Entities.Attendance;
 import is.hi.hbv501g.vibe.Services.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 @RequestMapping("/events")
@@ -91,6 +95,17 @@ public class EventController {
         return "event";
     }
 
+    @RequestMapping(value = "/{id}/cancel", method=RequestMethod.GET)
+    public String cancelEvent(@PathVariable("id") Long eventId, @RequestParam("username") String username) {
+        Event event = eventService.findById(eventId)
+            .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        event.setStatus("Canceled");
+        eventService.editEvent(event);
+        activityService.cancelEvent(event);
+        return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
+    }
+    
+
     @RequestMapping(value = "/{id}/attendance", method = RequestMethod.POST)
     public String updateAttendance(
             @PathVariable("id") Long eventId,
@@ -164,7 +179,7 @@ public class EventController {
         }
 
         // Log the deletion in the activity log
-        activityService.deleteEvent(event.getGroup(), event, user);
+        activityService.deleteEvent(event);
 
         eventService.delete(event);
         return "redirect:/groups/" + event.getGroup().getId() + "/details?username=" + username;
