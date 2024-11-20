@@ -28,5 +28,7 @@ public interface ActivityService {
     Activity eventComment(Group group, Event event, User creator);
     Activity removeUser(Group group, User user, User removed);
     Activity joinEvent(Group group, Event event, User user);
+    Activity addTag(Group group, String tag, User user);
+    Activity removeTag(Group group, String tag, User user);
     List<Activity> reversedByGroup(Group group);
 }

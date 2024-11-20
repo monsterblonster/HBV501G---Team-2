@@ -105,12 +105,14 @@ public class GroupController {
     @RequestMapping(value = "/{id}/add-tag", method = RequestMethod.POST)
     public String addTagToGroup(@PathVariable("id") Long groupId, @RequestParam("tag") String tagName, @RequestParam("username") String username) {
         groupService.addTagToGroup(groupId, tagName);
+        activityService.addTag(groupService.findById(groupId).orElse(null), tagName, userService.findUserByUsername(username).orElse(null));
         return "redirect:/groups/" + groupId + "/details?username=" + username;
     }
 
     @RequestMapping(value = "/{id}/remove-tag", method = RequestMethod.POST)
     public String removeTagFromGroup(@PathVariable("id") Long groupId, @RequestParam("tag") String tagName, @RequestParam("username") String username) {
         groupService.removeTagFromGroup(groupId, tagName);
+        activityService.removeTag(groupService.findById(groupId).orElse(null), tagName, userService.findUserByUsername(username).orElse(null));
         return "redirect:/groups/" + groupId + "/details?username=" + username;
     }
 

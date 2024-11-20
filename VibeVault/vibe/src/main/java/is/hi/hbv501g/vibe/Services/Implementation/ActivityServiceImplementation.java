@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -126,6 +125,20 @@ public class ActivityServiceImplementation implements ActivityService{
         activity.setDescriptionString("is attending ");
         activity.setTypeString(event.getName());
         activity.setLinkString("/events/" + event.getId().toString() + "/details?username=");
+        return this.save(activity);
+    }
+
+    @Override
+    public Activity addTag(Group group, String tag, User user) {
+        Activity activity = base(group, user);
+        activity.setDescriptionString("added the tag: " + tag);
+        return this.save(activity);
+    }
+
+    @Override
+    public Activity removeTag(Group group, String tag, User user) {
+        Activity activity = base(group, user);
+        activity.setDescriptionString("removed the tag: " + tag);
         return this.save(activity);
     }
 
