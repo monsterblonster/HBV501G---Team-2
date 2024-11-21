@@ -36,6 +36,7 @@ public class User {
     private String confirmPassword;
 
     @ManyToMany(mappedBy = "members")
+		@OrderBy
     private Set<Group> groups = new HashSet<>();
     
     @ManyToMany(mappedBy = "participants")

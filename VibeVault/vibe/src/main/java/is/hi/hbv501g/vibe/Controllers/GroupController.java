@@ -251,7 +251,7 @@ public class GroupController {
         }
 
         groupService.deleteGroup(groupId, adminUser);
-        return "redirect:/groups?username=" + currentUser;
+        return "redirect:/profile?username=" + currentUser;
     }
 
 
